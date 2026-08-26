@@ -1,0 +1,48 @@
+name: bw25
+
+channels:
+  - conda-forge
+  - cmutel
+
+dependencies:
+  - python=3.11
+
+  # Brightway 2.5
+  - brightway25
+  - ecoinvent_interface        # ecoinvent import (notebook 3) — needs a licence
+  - stats_arrays               # uncertainty distributions (notebooks 5-6)
+
+  # Scientific stack
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+
+  # Sensitivity analysis (notebook 8)
+  - salib
+
+  # Notebooks
+  - jupyterlab
+  - ipykernel
+  - openpyxl                   # Excel reading (notebook 4)
+
+# Setup:
+#
+#   conda env create -f environment.yml
+#   conda activate bw25
+#   python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
+#   jupyter lab
+#
+# Then pick the "Python (bw25)" kernel inside the notebook:
+#   Kernel → Change Kernel → Python (bw25)
+#
+# That last step is the one people skip. Creating the environment does not select it,
+# and a notebook running the wrong kernel gives ModuleNotFoundError no matter how many
+# times you reinstall. To check which Python a notebook is actually using:
+#
+#   import sys; print(sys.executable)
+#
+# The path should contain "bw25".
+#
+# `mamba env create -f environment.yml` is a faster drop-in if you have mamba.

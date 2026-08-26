@@ -1,0 +1,32 @@
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Brightway — never commit project data, it is large and machine-specific
+Brightway3/
+*.bw2package
+BWprojects/
+
+# Credentials — ecoinvent username/password must never be committed
+.env
+secrets.py
+credentials.json
+
+# Student solutions, if kept locally
+exercises/solutions/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
