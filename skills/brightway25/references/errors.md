@@ -110,12 +110,47 @@ problem.** Diagnose the kernel before suggesting any install.
 **Fix:** `import os; print(os.getcwd())` — the file must be beside the notebook.
 
 ### `ecoinvent_interface` authentication failures
-**Usual causes:** wrong credentials; no licence for the requested version; typo in
-`version` or `system_model`; institutional login that differs from the ecoinvent website
-login.
-**Fix:** verify by logging in at ecoinvent.org. Check the version string exactly
-(`'3.11'`, not `3.11`). Note the import is slow — several minutes, no progress bar. Tell
-students it is not frozen.
+
+**Check this first, before anything else:** has the user logged in at
+[ecoinvent.org](https://ecoinvent.org) in a browser and **accepted the licence and the
+personal-data agreement?** The API refuses accounts that have not, and the error message
+says nothing about agreements. This is the single most common cause, and it is invisible
+from Python.
+
+Other causes, in rough order of likelihood:
+
+- **Institutional SSO ≠ ecoinvent account.** If they normally reach ecoinvent through a
+  university portal, they may not have a direct username/password at all.
+- **Licence does not cover that version or system model.** Not every licence includes
+  every release.
+- **Arguments passed as numbers.** `version='3.11'` — a string, not `3.11`.
+- **Special characters in the password**, if set via environment variables — needs single
+  quotes: `export EI_PASSWORD='pa$$word'`.
+- **Outdated `ecoinvent_interface`.** It talks to an API that changes; something that
+  worked last month can break. Try updating.
+
+**Fix:** work through `setup.md`'s ecoinvent checklist in order. Do not debug Python until
+step 0 is confirmed.
+
+### Ecoinvent import appears frozen
+
+**Not an error.** The import takes **10–30 minutes with no progress bar**. The cell shows
+`[*]` and looks dead.
+
+**Do not interrupt it.** Interrupting can leave a half-imported project that fails in
+confusing ways afterwards. Say this *before* someone starts the import.
+
+If they already interrupted one, the cleanest fix is usually to start over:
+```python
+bd.projects.delete_project('name', delete_dir=True)
+```
+
+### Ecoinvent import fails partway through, and retrying behaves strangely
+
+**Usual cause:** a previous interrupted or failed import left the project in a partial
+state.
+**Fix:** delete the project and re-import rather than trying to repair it. Faster and more
+reliable.
 
 ---
 

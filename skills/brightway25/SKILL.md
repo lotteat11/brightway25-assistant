@@ -111,6 +111,25 @@ Load these as needed; do not read them all up front.
 | `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
 | `references/misconceptions.md` | Student reasoning seems off in a familiar way |
 
+## Ecoinvent — check the licence agreement first
+
+Ecoinvent is where people lose the most time, and the failure is usually **not** in their
+code.
+
+**Before debugging any ecoinvent authentication problem, ask whether they have logged in
+at ecoinvent.org in a browser and accepted the licence and personal-data agreement.** The
+API rejects accounts that have not, and the error says nothing about agreements. This is
+the most common cause and it is invisible from Python.
+
+Also worth knowing without looking anything up:
+- Institutional SSO is often *not* the same as a direct ecoinvent account
+- `version='3.11'` is a **string**, not a number
+- The import takes 10–30 minutes with no progress bar — a cell stuck at `[*]` is normal,
+  and interrupting it can leave a half-imported project
+- "Not able to determine geocollections" is a harmless warning, not a failure
+
+Full checklist in `references/setup.md`.
+
 ## Two traps specific to this course
 
 **Legacy API.** Your training data is full of Brightway 2 idioms that do not work in 2.5:

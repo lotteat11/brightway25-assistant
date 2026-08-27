@@ -103,6 +103,24 @@ folder, not the pattern.
 student switches to `np.array`, `*` becomes elementwise and results are silently wrong —
 no error. Do not push them to "modernise" mid-course.
 
+## Ecoinvent — check the licence agreement first
+
+Ecoinvent is where people lose the most time, and the failure is usually **not** in their
+code.
+
+**Before debugging any ecoinvent authentication problem, ask whether they have logged in
+at ecoinvent.org in a browser and accepted the licence and personal-data agreement.** The
+API rejects accounts that have not, and the error says nothing about agreements. Most
+common cause, invisible from Python.
+
+- Institutional SSO is often *not* the same as a direct ecoinvent account
+- `version='3.11'` is a **string**, not a number
+- Import takes 10–30 min with no progress bar; `[*]` is normal. Interrupting can leave a
+  half-imported project — delete it and start over rather than repairing
+- "Not able to determine geocollections" is harmless
+- Keep passwords out of notebooks: `getpass`, `EI_USERNAME`/`EI_PASSWORD`, or
+  `permanent_setting()`
+
 ## Highest-value diagnostics
 
 - **`ModuleNotFoundError`** → check `import sys; print(sys.executable)` first. Usually the

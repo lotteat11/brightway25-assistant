@@ -129,7 +129,38 @@ mange gange du installerer.
 
 ## 4. Ecoinvent
 
-Bruges fra notebook 3. Kræver **licens** — typisk gennem universitetet.
+**Det er her, de fleste går i stå.** Tag trinene i rækkefølge — hvert trin udelukker en
+hel type problem. Bruges fra notebook 3.
+
+### Trin 0: Log ind på hjemmesiden og accepter aftalen
+
+> **Det vigtigste trin, og det der oftest springes over.**
+
+Gå til [ecoinvent.org](https://ecoinvent.org), log ind, og **accepter licensaftalen og
+databehandlingsaftalen**.
+
+Har du aldrig logget ind i en browser, **virker din konto ikke fra Python** — uanset at
+brugernavn og kodeord er rigtige. Og fejlbeskeden siger ikke noget om aftaler, så du kan
+lede længe.
+
+Virker login på hjemmesiden ikke, hjælper det ikke at prøve i Python.
+
+### Trin 1: Tjek at du har en rigtig ecoinvent-konto
+
+Bruger du normalt ecoinvent gennem AAU's portal, har du måske **ikke** et direkte
+brugernavn og kodeord. Det er ikke det samme som dit AAU-login.
+
+Kan du logge ind direkte på ecoinvent.org med brugernavn og kodeord? Så er du klar.
+Ellers skal du have oprettet adgang først — spørg din vejleder eller biblioteket.
+
+### Trin 2: Installer pakken
+
+```bash
+conda activate bw25
+conda install -c conda-forge ecoinvent_interface
+```
+
+### Trin 3: Kør importen
 
 ```python
 import bw2io as bi
@@ -141,26 +172,63 @@ bi.import_ecoinvent_release(
     password='DIT-KODEORD')
 ```
 
-**Tre ting der driller:**
+Bemærk at `version` og `system_model` er **tekst** — `'3.11'` med anførselstegn, ikke
+`3.11`. Systemmodeller: `'cutoff'`, `'consequential'`, `'apos'`.
 
-**Det tager lang tid.** 10–30 minutter uden nogen fremdriftsindikator. Cellen viser `[*]`
-og ser død ud. **Den er ikke gået i stå.** Lad den køre — afbryder du, kan du ende med en
-halvt importeret database.
+### Trin 4: Vent — og afbryd ikke
 
-**Brugernavn og kodeord** er dem, du bruger på [ecoinvent.org](https://ecoinvent.org).
-Logger du normalt ind gennem universitetet, har du måske ikke en direkte konto — prøv at
-logge ind på hjemmesiden først for at være sikker.
+**Importen tager 10–30 minutter uden nogen fremdriftsindikator.** Cellen viser `[*]` og
+ser fuldstændig død ud.
 
-**Skriv ikke dit kodeord direkte i notebooken**, hvis du deler den:
+> **Den er ikke gået i stå.** Lad den køre.
 
+Afbryder du, kan du ende med en halvt importeret database, der fejler på forvirrende måder
+bagefter. Er det allerede sket, er det hurtigste at slette projektet og starte forfra:
+
+```python
+import bw2data as bd
+bd.projects.delete_project('projektnavn', delete_dir=True)
+```
+
+Vær opmærksom på **pladsen**: hvert ecoinvent-projekt fylder flere GB.
+
+---
+
+### Undgå at dit kodeord ender i notebooken
+
+Deler du din notebook, følger kodeordet med. Vælg én af disse:
+
+**Spørg hver gang** — intet gemmes:
 ```python
 import getpass
 username = input('ecoinvent brugernavn: ')
 password = getpass.getpass('ecoinvent kodeord: ')
 ```
 
-**Advarslen** *"Not able to determine geocollections for all datasets"* er harmløs.
-Importen er lykkedes.
+**Gem det én gang** — så skal du aldrig skrive det igen:
+```python
+from ecoinvent_interface import permanent_setting
+permanent_setting("username", "dit-brugernavn")
+permanent_setting("password", "dit-kodeord")
+```
+Derefter kan du kalde `import_ecoinvent_release()` uden `username` og `password`.
+
+---
+
+### Når det stadig ikke virker
+
+| Symptom | Sandsynlig årsag |
+|---|---|
+| Login afvises, men kodeordet er rigtigt | Aftalen er ikke accepteret på hjemmesiden — **trin 0** |
+| Du har aldrig logget ind i browseren | Samme — gå til ecoinvent.org først |
+| Virker hos en kollega, ikke hos dig | Jeres licenser dækker forskellige versioner |
+| `version` eller `system_model` afvises | Skrevet som tal i stedet for tekst, eller ikke dækket af din licens |
+| Cellen kører i det uendelige | Normalt. 10–30 min. Afbryd ikke |
+| Importen fejlede, og nu opfører den sig sært | Halvt importeret projekt — slet det og start forfra |
+| *"Not able to determine geocollections"* | **Harmløs advarsel.** Importen lykkedes |
+
+Er du stadig blokeret, så spørg assistenten og indsæt hele fejlbeskeden — den kender netop
+disse problemer.
 
 ---
 

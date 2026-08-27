@@ -94,36 +94,114 @@ repairing it. Say so early rather than after an hour of debugging.
 
 ---
 
-## Ecoinvent
+## Ecoinvent — the biggest single obstacle
 
-Needs a **valid licence** and credentials — the same ones used at ecoinvent.org. Note that
-institutional SSO logins sometimes differ from the direct ecoinvent account; if
-credentials fail, have the student verify by logging in on the website.
+**Expect this to be where people lose the most time.** Work through the checklist in
+order; each step rules out a whole class of failure. Do not let someone debug Python when
+the real problem is an unaccepted licence agreement.
+
+### Step 0 — accept the licence on the website (skipped constantly)
+
+**You must log in at [ecoinvent.org](https://ecoinvent.org) and accept the licence and the
+personal-data agreement before the API will work at all.** A brand-new account that has
+never logged in on the website will fail authentication from Python, with an error that
+says nothing about agreements.
+
+If someone is stuck on authentication and has never logged in through the browser, **this
+is almost certainly the cause.** Check it before anything else.
+
+### Step 1 — confirm the licence and the login
+
+Credentials are the ones for ecoinvent.org itself. Common complications:
+
+- **Institutional SSO** is often *not* the same as a direct ecoinvent account. If they
+  normally reach ecoinvent through a university portal, they may not have a usable
+  username/password pair at all.
+- **Which versions the licence covers.** Not every licence includes every version or
+  system model.
+- Have them verify by logging in on the website. If that fails, no amount of Python will
+  help.
+
+### Step 2 — install the package
 
 ```bash
 conda install -c conda-forge ecoinvent_interface
 ```
 
+Note `ecoinvent_interface` is described by its authors as unofficial and unsupported, and
+it talks to an API that changes. Version drift is a real cause of sudden breakage — if
+something worked last month and does not now, check whether the package needs updating.
+
+### Step 3 — run the import
+
 ```python
 import bw2io as bi
+
 bi.import_ecoinvent_release(
     version='3.11',
     system_model='consequential',
     username='...', password='...')
 ```
 
-**Tell students it takes several minutes with no progress bar.** A cell showing `[*]` for
-ten minutes is normal. Many kill it and retry, which wastes more time and occasionally
-leaves a half-imported database.
+Arguments are **strings**: `'3.11'`, not `3.11`. System models: `'cutoff'`,
+`'consequential'`, `'apos'` — availability varies by version.
 
-Arguments are strings: `'3.11'` not `3.11`; `'cutoff'`, `'consequential'`, `'apos'`.
+The import brings `biosphere3` with it. No separate `bw2setup()` in 2.5.
 
-Do not put credentials in a notebook that will be shared or committed. Suggest:
+### Step 4 — wait, and do not interrupt
+
+**It takes 10–30 minutes with no progress bar.** The cell shows `[*]` and looks frozen.
+It is not.
+
+Interrupting is actively harmful: it can leave a half-imported database that then fails in
+confusing ways. If someone has interrupted an import, the cleanest fix is usually to
+delete the project and start again:
+
+```python
+bd.projects.delete_project('name', delete_dir=True)
+```
+
+Tell people this *before* they start the import, not after.
+
+### Keeping credentials out of notebooks
+
+Never type a password into a notebook that might be shared or committed. Three options,
+in increasing order of convenience:
+
+**Prompt each time** — simplest, nothing stored:
 ```python
 import getpass
 username = input('ecoinvent username: ')
 password = getpass.getpass('ecoinvent password: ')
 ```
+
+**Environment variables** — `ecoinvent_interface` reads these automatically:
+```bash
+export EI_USERNAME=yourname
+export EI_PASSWORD='your$password'      # single quotes if it has special characters
+```
+
+**Stored permanently** — set once, then never pass credentials again:
+```python
+from ecoinvent_interface import permanent_setting
+permanent_setting("username", "yourname")
+permanent_setting("password", "yourpassword")
+```
+
+Precedence: direct arguments beat environment variables, which beat stored settings.
+
+### Common ecoinvent failures
+
+| Symptom | Likely cause |
+|---|---|
+| Authentication fails, credentials look right | Licence/PII agreement not accepted on the website (step 0) |
+| Authentication fails, never logged in via browser | Same — send them to ecoinvent.org first |
+| Works on a colleague's machine, not theirs | Different licence coverage, or different `ecoinvent_interface` version |
+| `version` or `system_model` rejected | Passed as a number, not a string; or that combination is not in their licence |
+| Cell runs forever | Normal. 10–30 min. Do not interrupt |
+| Import fails halfway, retry behaves oddly | Half-imported project — delete it and start over |
+| "Not able to determine geocollections" | Harmless warning. The import succeeded |
+| Disk fills up | ecoinvent projects are several GB each; `bd.projects.report()` shows sizes |
 
 The import brings `biosphere3` with it — no separate `bw2setup()` needed in 2.5.
 
