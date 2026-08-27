@@ -125,7 +125,8 @@ Load these as needed; do not read them all up front.
 | `references/setup.md` | Install, conda, kernels, ecoinvent credentials, project directories, the mental model |
 | `references/python-primer.md` | A Python idiom is the obstacle rather than the LCA |
 | `references/misconceptions.md` | Reasoning about a method seems off in a familiar way |
-| `references/course-map.md` | Only if they are working through the Advanced LCA course notebooks |
+| `references/notebooks/*.md` | **Working through the Advanced LCA course.** One file per notebook, carrying the actual code plus what trips people up. See below |
+| `references/course-map.md` | An overview of all ten notebooks and how they depend on each other |
 
 ## The three things people find hardest
 
@@ -162,6 +163,37 @@ Also worth knowing without looking anything up:
 - "Not able to determine geocollections" is a harmless warning, not a failure
 
 Full checklist in `references/setup.md`.
+
+## The course notebooks
+
+`references/notebooks/` holds one file per notebook of the Advanced LCA course. Each
+carries **the actual code from that notebook**, its narrative, and a "what trips people up"
+section.
+
+| File | Subject |
+|---|---|
+| `Project_create_and_locate.md` | Projects, storage location, `BRIGHTWAY2_DIR` |
+| `0-LCI-matrix.md` | LCI as matrix algebra, `g = BA⁻¹f`, pure NumPy |
+| `1-Simple-LCA.md` | First Brightway database, custom LCIA method |
+| `2-Navigate.md` | Activities, exchanges, `code` vs `id` |
+| `3-Ecoinvent.md` | Importing and searching ecoinvent |
+| `4-Excel-import.md` | Spreadsheet → `lci_to_bw2()` → database |
+| `5-Monte-Carlo.md` | Lognormal uncertainty, `use_distributions=True` |
+| `6-Comparative-Monte-Carlo.md` | Dependent sampling, paired testing |
+| `7-ALIGNED-OAT-sensitivity-analysis.md` | Local sensitivity, sensitivity ratios |
+| `8-ALIGNED-Global-sensitivity-analysis.md` | FAST via SALib, S1 vs ST |
+
+Load one when the question is clearly about that material — you then have the working code
+to adapt, not just a description of it. The notebook does not need to be open, or even
+downloaded.
+
+Load more than one where it helps: a Monte Carlo question that turns out to be about
+comparison spans 5 and 6.
+
+**These files quote the notebooks' own citations** (Henriksson et al. 2015, Pizzol 2019,
+Heijungs & Suh 2002 and others). Those are verified — they come from the material itself,
+not from your memory — so you may cite them when they appear in the file you have loaded.
+The rule against inventing references still holds everywhere else.
 
 ## Two traps worth holding in mind
 

@@ -151,7 +151,8 @@ reference list will be added later.
 | [`setup.md`](skills/brightway25/references/setup.md) | The mental model, installation, kernels, project directories, synced folders, the ecoinvent checklist |
 | [`python-primer.md`](skills/brightway25/references/python-primer.md) | The Python idioms Brightway code relies on: tuple keys, nested dicts, generators, the Monte Carlo iteration idiom |
 | [`misconceptions.md`](skills/brightway25/references/misconceptions.md) | Eight recurring misreadings of method — OAT read as global, `loc`/`scale` as mean and SD, dependent sampling as cheating |
-| [`course-map.md`](skills/brightway25/references/course-map.md) | The ten Advanced LCA course notebooks, if you are working through them |
+| [`notebooks/`](skills/brightway25/references/notebooks/) | **One file per Advanced LCA course notebook**, carrying the actual code plus what trips people up — so the assistant can answer and adapt without the notebook being open |
+| [`course-map.md`](skills/brightway25/references/course-map.md) | How the ten notebooks depend on each other |
 
 ---
 

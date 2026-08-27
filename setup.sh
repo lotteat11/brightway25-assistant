@@ -4,13 +4,14 @@
 #
 #   1. A Python virtual environment (.venv) with Brightway and the scientific stack
 #   2. A Jupyter kernel so notebooks can find it
-#   3. A folder for your own work, in the right place
+#   3. Either a folder for your own work, or the Advanced LCA course notebooks
 #
 # Run it from this directory:
 #
 #     bash setup.sh
 #
-# Takes about 5 minutes. Safe to run again — it skips what already exists.
+# It asks what you want to use it for. Takes about 5 minutes.
+# Safe to run again — it skips whatever already exists.
 
 set -euo pipefail
 
@@ -30,6 +31,41 @@ fail()  { printf '  \033[31m✗\033[0m %s\n' "$1" >&2; }
 echo
 bold "Brightway 2.5 Assistant — setup"
 echo
+
+# ------------------------------------------------------------- What is this for?
+
+MODE="${SETUP_MODE:-}"
+
+if [ -z "$MODE" ]; then
+    echo "  What do you want to use this for?"
+    echo
+    echo "    1) My own Brightway work"
+    echo "       Creates a project folder with an example notebook to check the"
+    echo "       installation works."
+    echo
+    echo "    2) Learning from the Advanced LCA course notebooks"
+    echo "       Downloads the ten course notebooks (matrix LCI, ecoinvent, Monte"
+    echo "       Carlo, sensitivity analysis) and sets them up to run."
+    echo
+    echo "    3) Both"
+    echo
+    printf "  Choose [1/2/3, default 1]: "
+    read -r answer
+    echo
+    case "${answer:-1}" in
+        1|"") MODE="own" ;;
+        2)    MODE="course" ;;
+        3)    MODE="both" ;;
+        *)    warn "Not a valid choice — setting up your own project folder."
+              MODE="own" ;;
+    esac
+fi
+
+case "$MODE" in
+    own)    ok "Setting up for your own work" ;;
+    course) ok "Setting up with the course notebooks" ;;
+    both)   ok "Setting up both" ;;
+esac
 
 # ---------------------------------------------------------------- 1. Python
 
@@ -111,6 +147,8 @@ ok "Kernel \"$KERNEL_LABEL\" registered"
 warn "In each notebook: Kernel → Change Kernel → $KERNEL_LABEL"
 
 # --------------------------------------------------------- 4. Your project folder
+
+if [ "$MODE" = "own" ] || [ "$MODE" = "both" ]; then
 
 echo
 bold "4/4  Creating your project folder"
@@ -198,6 +236,21 @@ NOTEBOOK
     ok "Created $PROJECT_DIR/ with first_lca.ipynb"
 fi
 
+fi
+
+# ------------------------------------------------- 4b. Course notebooks
+
+if [ "$MODE" = "course" ] || [ "$MODE" = "both" ]; then
+    echo
+    bold "Downloading the course notebooks"
+    if [ -x "$ROOT/get-course-notebooks.sh" ] || [ -f "$ROOT/get-course-notebooks.sh" ]; then
+        # Runs its own git clone and rewrites each notebook's kernel to bw25.
+        bash "$ROOT/get-course-notebooks.sh" 2>&1 | sed -n '/Downloading/,/^$/p' | grep -E '✓|!' || true
+    else
+        fail "get-course-notebooks.sh is missing from this folder."
+    fi
+fi
+
 # ------------------------------------------------------------------ Verify
 
 echo
@@ -218,18 +271,30 @@ fi
 echo
 bold "Done."
 echo
-echo "  Next:"
+echo "  1. Open THIS folder in VS Code — not a single file, or the assistant"
+echo "     will not be loaded:"
+echo "       File → Open Folder… → $(basename "$ROOT")"
 echo
-echo "    1. Open THIS folder in VS Code:"
-echo "         File → Open Folder… → $(basename "$ROOT")"
-echo "       Opening a single file instead means the assistant is not loaded."
-echo
-echo "    2. Open $PROJECT_DIR/first_lca.ipynb"
-echo
-echo "    3. Kernel → Change Kernel → $KERNEL_LABEL"
-echo
-echo "    4. Run all cells. It should print 80.0"
-echo
+
+if [ "$MODE" = "own" ] || [ "$MODE" = "both" ]; then
+    echo "  2. Open $PROJECT_DIR/first_lca.ipynb"
+    echo "  3. Kernel → Change Kernel → $KERNEL_LABEL"
+    echo "  4. Run all cells. It should print 80.0"
+    echo
+fi
+
+if [ "$MODE" = "course" ] || [ "$MODE" = "both" ]; then
+    echo "  2. Open Course-material-bw25/ and start with 0-LCI-matrix.ipynb"
+    echo "     The kernel is already set — just run the cells."
+    echo
+    echo "     Order:  Project_create_and_locate → 0 → 1 → 2 → 3 → 4"
+    echo "                                             ↓"
+    echo "                                             5 → 6"
+    echo "                                             ↓"
+    echo "                                             7 → 8"
+    echo
+fi
+
 echo "  Check the assistant is active — ask your AI tool:"
 echo "    \"How do I run a Monte Carlo in Brightway 2.5?\""
 echo "    Correct: mentions use_distributions=True"

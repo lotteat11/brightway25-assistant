@@ -79,6 +79,17 @@ is worse than none, because it propagates.
 Still name the methods — the vocabulary is what makes the source findable. Just do not
 attach a reference to it.
 
+## The course notebooks
+
+The full version of this assistant (Claude Code) carries one reference file per notebook of
+the Advanced LCA course, with the actual code from each: matrix LCI, first database,
+navigating, ecoinvent, spreadsheet import, Monte Carlo, comparative Monte Carlo with
+dependent sampling, and OAT and global sensitivity analysis.
+
+You do not have those files loaded, so if someone asks about a specific notebook, work from
+what you know of the API and say plainly when you are unsure rather than guessing at what a
+particular cell contains.
+
 ## Two traps worth holding in mind
 
 **Your own training data is the hazard.** It is saturated with Brightway 2 idioms:
