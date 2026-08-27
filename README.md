@@ -6,9 +6,6 @@ For advanced LCA work in Brightway — linking foreground systems to ecoinvent, 
 uncertainty, running sensitivity analyses, and getting the software to cooperate. Works
 with GitHub Copilot, Claude Code, Cursor, and anything else that reads `AGENTS.md`.
 
-Originally built for the Advanced LCA course at Aalborg University; useful for any
-Brightway 2.5 work.
-
 ---
 
 ## The problem it solves
