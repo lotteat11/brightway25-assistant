@@ -6,6 +6,78 @@ nothing is being assessed. Fix it fast.
 
 ---
 
+## Getting started — the mental model
+
+Newcomers get stuck less on syntax than on **not knowing what the pieces are**. Five
+minutes on this saves an hour of confusion.
+
+**A project is a sealed workspace.** Everything lives inside one project: your foreground
+database, ecoinvent, the biosphere, the LCIA methods. Projects do not see each other. You
+are always "in" exactly one:
+
+```python
+import bw2data as bd
+bd.projects.set_current('my_project')     # creates it if it does not exist
+print(bd.projects.current)
+```
+
+Forgetting to set the project is the cause of a surprising number of "my database
+disappeared" reports. It did not — you are in a different project.
+
+**A project contains databases**, usually three kinds:
+
+| Kind | What it is | Typical name |
+|---|---|---|
+| Foreground | Your own product system, the thing you are modelling | whatever you choose |
+| Background | ecoinvent — everything upstream | `ecoinvent-3.11-consequential` |
+| Biosphere | Elementary flows: emissions, resources | `ecoinvent-3.11-biosphere` |
+
+```python
+print(list(bd.databases))
+```
+
+**A database contains activities; activities contain exchanges.** An exchange is one arrow
+— "this activity consumes 2 kg of that". Exchanges are what connect everything, including
+across databases. See `linking.md`.
+
+**LCIA methods are separate** from databases, identified by tuples:
+
+```python
+[m for m in bd.methods if 'IPCC' in str(m)][:5]
+```
+
+**The whole workflow, end to end:**
+
+```python
+import bw2data as bd, bw2calc as bc
+
+bd.projects.set_current('my_project')          # 1. pick a workspace
+db = bd.Database('my_foreground')              # 2. get your database
+act = db.get('my_activity')                    # 3. pick what to assess
+method = ('IPCC 2021', 'climate change', 'GWP 100a')
+
+lca = bc.LCA({act: 1}, method)                 # 4. define the functional unit
+lca.lci()                                      # 5. solve the inventory
+lca.lcia()                                     # 6. characterise
+print(lca.score)                               # 7. read the result
+```
+
+Steps 5 and 6 are separate on purpose: `lci()` answers *what is emitted*, `lcia()` answers
+*how much does it matter*. That is why `.score` fails if you skip them.
+
+**A realistic first-time order of work:**
+
+1. Install the environment, register the kernel, select it in Jupyter
+2. Create a project
+3. Import ecoinvent (the long part — see below)
+4. Build a small foreground database, two or three activities
+5. Link it to ecoinvent and biosphere (`linking.md`)
+6. Run one LCA and sanity-check the number
+
+Do not attempt 4–6 before 3 has finished successfully.
+
+---
+
 ## The standard install
 
 From the repository root:

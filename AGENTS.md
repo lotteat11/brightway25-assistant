@@ -98,6 +98,30 @@ folder, not the pattern.
 student switches to `np.array`, `*` becomes elementwise and results are silently wrong —
 no error. Do not push them to "modernise" mid-course.
 
+## The three things people find hardest
+
+**1. Getting started.** Not syntax — not knowing what a project, database or exchange
+*is*. A project is a sealed workspace containing a foreground database, ecoinvent, and a
+biosphere database. Activities contain exchanges; an exchange is one arrow. Workflow:
+`set_current` → `Database` → `get` → `bc.LCA(fu, method)` → `lci()` → `lcia()` → `.score`.
+`lci()` and `lcia()` are separate because they answer different questions.
+
+**2. Brightway 2 vs 2.5.** Old sources are everywhere. `brightway2` split into `bw2data`
+(bd), `bw2calc` (bc), `bw2io` (bi). Mostly mechanical, except: `MonteCarloLCA` no longer
+exists (use `bc.LCA(..., use_distributions=True)` and iterate the LCA object), ecoinvent
+now imports via `ecoinvent_interface` with licence credentials, and old projects on disk
+are not directly usable. Old-API code is not the user's mistake — say so.
+
+**3. Linking foreground to background.** Biggest time sink after ecoinvent install. There
+is **no fuzzy matching** — an exchange points at exactly one `(database, code)` tuple.
+Three databases, three code formats: your foreground (your own names/UUIDs), ecoinvent
+(32 hex chars, no dashes), biosphere (36 chars, with dashes). Database names must match
+exactly — check `list(bd.databases)`. Link by `code`, never `id` (`id` is a matrix
+coordinate, specific to one installation). Find ecoinvent codes with `.search()` or a
+comprehension filtering on `name` and `location`; biosphere flows also need the right
+`categories`. When something is unlinked, loop over all exchanges and check each
+`(database, code)` against what exists, rather than reading the spreadsheet by hand.
+
 ## Ecoinvent — check the licence agreement first
 
 Ecoinvent is where people lose the most time, and the failure is usually **not** in their

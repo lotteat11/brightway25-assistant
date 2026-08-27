@@ -25,6 +25,18 @@ print(list(bd.databases))    # database there?
 print([a['code'] for a in bd.Database('some_db')][:20])   # what codes exist?
 ```
 
+### `KeyError` on an ecoinvent or biosphere code
+**Means:** the exchange points at something that is not there — an unlinked exchange.
+**Check, in order:**
+1. Does the database name match exactly? `print(list(bd.databases))` — `ecoinvent-3.11-consequential`, not `ecoinvent 3.11` or a different system model
+2. Is the code in the right format? ecoinvent codes are 32 hex characters with **no
+   dashes**; biosphere codes are 36 characters **with dashes**. Using one where the other
+   belongs is common
+3. Does the code actually exist? `bd.get_activity((dbname, code))`
+
+**Do not read the spreadsheet by hand.** `linking.md` has a loop that checks every
+exchange in a database and prints exactly which links are broken. Run that first.
+
 ### `AssertionError` / `ValidityError` on `.write()`
 **Means:** the dict you passed does not match the structure Brightway expects.
 **Usual causes:** missing `'exchanges'` key; an exchange missing `'input'`, `'amount'` or
@@ -40,6 +52,19 @@ crashed kernel that never released the lock.
 **Fix:** shut down other kernels (Jupyter: *Running* tab → Shutdown). If nothing else is
 running, restart the kernel. On synced folders (Dropbox/OneDrive) this recurs — see
 `setup.md`.
+
+### Everything imports, but the score is zero or suspiciously small
+**Usual cause:** exchanges are silently unlinked, so the foreground is not actually
+connected to the background. No error is raised — the calculation just has nothing to
+propagate through.
+**Fix:** run the diagnostic loop in `linking.md`. Also sanity-check that technosphere
+exchanges point at real ecoinvent activities and not at placeholder rows.
+
+### Results differ between machines, or after re-importing ecoinvent
+**Means:** something is linked by `id` instead of `code`.
+**Why:** `id` is an integer matrix coordinate assigned by *this* installation — it depends
+on what else is in the database. `code` is a stable string.
+**Fix:** always link by `code`. See `linking.md`.
 
 ### `.write()` seems to succeed but the database is empty
 **Usual cause:** writing a dict built from a DataFrame where `lci_to_bw2()` silently

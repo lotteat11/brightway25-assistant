@@ -26,20 +26,78 @@ them later.
 
 ---
 
-## Deprecation table
+## Brightway 2 vs 2.5 — what actually changed
+
+People arrive here from old tutorials, old notebooks, colleagues' scripts, and AI
+assistants working from memory. Understanding *what* changed makes old code translatable
+instead of just broken.
+
+**The umbrella package was split.** Brightway 2 had one `brightway2` package that
+re-exported everything. Brightway 2.5 exposes the real packages directly:
+
+| Package | Contains |
+|---|---|
+| `bw2data` (`bd`) | Projects, databases, activities, exchanges, methods |
+| `bw2calc` (`bc`) | LCA calculations, Monte Carlo |
+| `bw2io` (`bi`) | Importers — ecoinvent, Excel |
+
+So most of the migration is knowing *which* package a name moved to.
+
+### Name translation
 
 | Legacy (Brightway 2) | Brightway 2.5 |
 |---|---|
-| `import brightway2 as bw` | `import bw2data as bd`, `import bw2calc as bc` |
+| `import brightway2 as bw` | `import bw2data as bd`, `import bw2calc as bc`, `import bw2io as bi` |
 | `bw.LCA(...)` | `bc.LCA(...)` |
 | `bw.Database(...)` | `bd.Database(...)` |
-| `bw.methods`, `bw.databases` | `bd.methods`, `bd.databases` |
-| `MonteCarloLCA(demand, method)` | `bc.LCA(demand, method, use_distributions=True)` |
-| `next(mc)` on `MonteCarloLCA` | iterate the `LCA` object directly |
-| `bw2setup()` | `bi.import_ecoinvent_release()` brings biosphere with it |
+| `bw.methods`, `bw.databases`, `bw.projects` | `bd.methods`, `bd.databases`, `bd.projects` |
+| `bw.get_activity(...)` | `bd.get_activity(...)` |
+| `bw.Method(...)` | `bd.Method(...)` |
+| `bw2setup()` | Not needed — `bi.import_ecoinvent_release()` brings biosphere with it |
 
-If a student's code uses the left column, it came from an older tutorial, an older
-notebook, or an AI assistant working from memory. Say so plainly — it is not their mistake.
+### Behavioural changes — not just renames
+
+These are the ones that cause real confusion, because a mechanical find-and-replace
+leaves them broken.
+
+**Monte Carlo is no longer a separate class.**
+
+```python
+# Brightway 2
+mc = MonteCarloLCA({act: 1}, method)
+for _ in range(500):
+    next(mc)
+    results.append(mc.score)
+
+# Brightway 2.5 — an ordinary LCA with distributions switched on
+mc = bc.LCA({act: 1}, method, use_distributions=True)
+mc.lci(); mc.lcia()
+results = [mc.score for _ in zip(range(500), mc)]
+```
+
+`MonteCarloLCA` does not exist. If someone's code imports it, they are on an old tutorial.
+
+**Activities have both `code` and `id`.** `id` (an integer, the matrix coordinate) is
+much more prominent in 2.5. It is installation-specific — never use it for linking or
+sharing. See `linking.md`.
+
+**ecoinvent import goes through `ecoinvent_interface`** with your licence credentials,
+rather than pointing at a folder of downloaded files.
+
+**Data is stored differently on disk.** Brightway 2 projects are not automatically usable
+by 2.5. Do not tell someone their old project will just open.
+
+### Recognising old code
+
+Any of these means Brightway 2:
+
+- `import brightway2` or `from brightway2 import *`
+- `MonteCarloLCA`, `ParameterVectorLCA`
+- `bw2setup()`
+- `bw.` as a prefix on almost anything
+
+Say plainly that it is old-API code from an outdated source — **it is not their mistake**,
+and the fix is usually mechanical apart from the behavioural changes above.
 
 ---
 

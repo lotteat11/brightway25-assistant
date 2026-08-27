@@ -109,7 +109,28 @@ Load these as needed; do not read them all up front.
 | `references/setup.md` | Install, conda, kernels, ecoinvent credentials, project directories |
 | `references/python-primer.md` | Student is confused by a Python idiom rather than the LCA |
 | `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
+| `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — unlinked exchanges, `KeyError` on a code, choosing an ecoinvent activity |
 | `references/misconceptions.md` | Student reasoning seems off in a familiar way |
+
+## The three things people find hardest
+
+Recognise these and go to the right reference immediately.
+
+**1. Getting started at all.** Not syntax — not knowing what a project, a database or an
+exchange *is*, or in what order to do things. `setup.md` opens with the mental model and a
+realistic first-time order of work. Explain the pieces before the code.
+
+**2. Telling Brightway 2 from 2.5.** Old tutorials, colleagues' scripts and AI answers are
+full of `import brightway2 as bw` and `MonteCarloLCA`. Most of it translates mechanically,
+but Monte Carlo and ecoinvent import changed *behaviourally*, not just in name.
+`bw25-api.md` has the translation table and the real differences. Always say plainly that
+old-API code is not the user's mistake.
+
+**3. Linking foreground to background.** The single biggest source of lost time after
+ecoinvent installation. Brightway does no fuzzy matching: an exchange points at exactly
+one `(database, code)` tuple, and the three databases involved use three different code
+formats. `linking.md` has the diagnostic loop that turns "something is wrong" into a list
+of specific broken links — run it before reading a spreadsheet by hand.
 
 ## Ecoinvent — check the licence agreement first
 

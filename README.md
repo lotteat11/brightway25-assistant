@@ -115,10 +115,83 @@ gang. Fejlbesked: ingen. Løsningen: `list(act.exchanges())`.
 
 ---
 
-## Ecoinvent — den største forhindring
+## De tre ting der er sværest
 
-Det er her, folk taber mest tid, og det er sjældent et Python-problem. Derfor er der en
-tjekliste både i [GETTING-STARTED.md](GETTING-STARTED.md) og i assistentens opslagsfiler.
+Tre ting koster erfaringsmæssigt mest tid. Assistenten er bygget om dem.
+
+### 1. Overhovedet at komme i gang
+
+Det svære er sjældent syntaksen — det er ikke at vide, **hvad delene er**, og i hvilken
+rækkefølge man gør tingene.
+
+Et *projekt* er en lukket arbejdsplads. Inde i det ligger tre slags databaser: din egen
+foreground, ecoinvent som background, og biosphere med elementarflows. Databaser
+indeholder *activities*, som indeholder *exchanges* — og en exchange er én pil: "denne
+aktivitet bruger 2 kg af den der".
+
+Hele arbejdsgangen:
+
+```python
+bd.projects.set_current('mit_projekt')     # 1. vælg arbejdsplads
+act = bd.Database('min_foreground').get('min_aktivitet')
+lca = bc.LCA({act: 1}, metode)             # 2. definer funktionel enhed
+lca.lci()                                  # 3. løs inventory
+lca.lcia()                                 # 4. karakterisér
+print(lca.score)
+```
+
+`lci()` og `lcia()` er adskilte med vilje: den første svarer på *hvad udledes*, den anden
+på *hvor meget betyder det*. Derfor fejler `.score`, hvis man springer dem over.
+
+### 2. Forskellen på Brightway 2 og 2.5
+
+Gamle tutorials, kollegers scripts og AI-svar er fulde af den gamle API. Det meste kan
+oversættes mekanisk — `brightway2` blev delt i `bw2data`, `bw2calc` og `bw2io` — men
+noget ændrede sig i **opførsel**, ikke bare i navn:
+
+| Gammel | Ny |
+|---|---|
+| `MonteCarloLCA(fu, method)` | `bc.LCA(fu, method, use_distributions=True)` og iterér objektet |
+| `bw2setup()` | Ikke nødvendig — ecoinvent-importen henter biosphere med |
+| ecoinvent fra en mappe med filer | `ecoinvent_interface` med licens-login |
+
+Gamle projekter på disken kan heller ikke bare åbnes i 2.5.
+
+Assistenten siger tydeligt, når noget er gammel API — **det er ikke din fejl**, det er
+kilden der er forældet.
+
+### 3. Matching fra foreground til background
+
+Den største tidsrøver efter ecoinvent-installationen.
+
+**Brightway gætter ikke.** Der er ingen fuzzy matching, ingen "find den nærmeste
+aktivitet". En exchange peger på præcis ét `(database, code)`-par — findes det ikke, er
+den *unlinked*, og databasen regner ikke.
+
+Det gør det svært, at de tre databaser bruger **tre forskellige kodeformater**:
+
+| Database | Eksempel | Format |
+|---|---|---|
+| Din foreground | `Electricity production` | Det du selv vælger |
+| ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 tegn, **uden** bindestreger |
+| biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 tegn, **med** bindestreger |
+
+Dertil skal databasenavnet passe helt præcist — `ecoinvent-3.11-consequential`, ikke
+`ecoinvent 3.11` eller en anden systemmodel.
+
+Assistenten har en diagnostisk løkke, der gennemgår alle exchanges og udskriver præcis
+hvilke links der er brudt — i stedet for at du skal læse et regneark igennem i hånden.
+
+Den ved også, at du skal linke via `code` og **aldrig** via `id`: `id` er en
+matrixkoordinat, der er specifik for din installation, og peger på noget andet på en
+kollegas maskine.
+
+---
+
+## Ecoinvent — og den fjerde forhindring: at få den installeret
+
+Selve installationen er en forhindring for sig, og det er sjældent et Python-problem.
+Derfor er der en tjekliste både i [GETTING-STARTED.md](GETTING-STARTED.md) og i assistentens opslagsfiler.
 
 Det vigtigste, som næsten ingen ved:
 
@@ -225,9 +298,10 @@ behov:
 
 | Fil | Indhold |
 |---|---|
-| [`errors.md`](skills/brightway25/references/errors.md) | 20 konkrete fejlbeskeder → hvad de betyder → hvordan de rettes. Database-, beregnings-, ecoinvent- og Python-fejl |
+| [`errors.md`](skills/brightway25/references/errors.md) | 25 konkrete fejlbeskeder → hvad de betyder → hvordan de rettes. Database-, beregnings-, ecoinvent- og Python-fejl |
 | [`setup.md`](skills/brightway25/references/setup.md) | Installation, kernel-problemer, projektmapper, synkroniserede mapper, **ecoinvent-tjekliste**, Windows/macOS-særheder |
-| [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | Den nuværende API gennemgået: projekter, databaser, activities, exchanges, LCIA-metoder, Monte Carlo, følsomhedsanalyse — plus oversættelsestabellen fra Brightway 2 |
+| [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | Den nuværende API: projekter, databaser, activities, exchanges, LCIA-metoder, Monte Carlo, følsomhedsanalyse — plus hvad der ændrede sig fra Brightway 2, og hvad der ændrede sig i *opførsel* frem for bare navn |
+| [`linking.md`](skills/brightway25/references/linking.md) | **Matching fra foreground til background:** hvordan linking virker, de tre kodeformater, hvordan du finder den rigtige ecoinvent-aktivitet, og en diagnostisk løkke der finder brudte links |
 | [`python-primer.md`](skills/brightway25/references/python-primer.md) | De Python-idiomer notebooks bruger: dicts, tuple-nøgler, comprehensions, generators, `zip(range(500), mc)`-mønsteret, pandas og numpy — kun det nødvendige |
 | [`course-map.md`](skills/brightway25/references/course-map.md) | Alle ti kursus-notebooks: hvad de dækker, hvad der kræves først, og hvor det er svært |
 | [`misconceptions.md`](skills/brightway25/references/misconceptions.md) | Otte typiske misforståelser — ikke kodefejl, men fejl i *forståelsen*, fx at OAT-resultater gælder globalt |
