@@ -32,6 +32,63 @@ Two differences worth naming out loud, because they surprise people:
 
 ---
 
+## Find the right activity in ecoinvent
+
+Searching is easy; **choosing between the results is the hard part**, and it is a modelling
+decision rather than a syntax problem. A search for electricity in ecoinvent returns dozens
+of near-identical entries.
+
+### See what you actually got
+
+Print the fields that distinguish them, not just the names:
+
+```python
+ei = bd.Database('ecoinvent-3.11-consequential')      # your actual name
+
+for a in ei.search('electricity, medium voltage', limit=30):
+    print(f"{a['location']:<8} | {a.get('reference product',''):<28} | {a['name']}")
+```
+
+Sorting by location first makes the list readable — the same activity usually appears once
+per region.
+
+### What the differences mean
+
+| Field | What it decides |
+|---|---|
+| `location` | Where the process happens. `DK`, `RER` (Europe), `GLO` (global), `RoW` (rest of world). Use the most specific one your system justifies |
+| `reference product` | What the activity *produces*. Two activities can share a name and produce different things |
+| **market** vs **production** in the name | A *market* includes distribution and the regional supply mix; a *production* activity is one specific route. For an input you buy, the market is usually right |
+| voltage / grade / technology in the name | High/medium/low voltage, primary/secondary material, and so on — match your actual system |
+| system model (in the database name) | cutoff, consequential, APOS. Chosen once for the whole study, not per activity |
+
+**"market for X" versus "X production"** is the distinction people get wrong most often. If
+your process consumes electricity from the grid, you want the market. If you are modelling
+a specific power plant, you want the production activity.
+
+### Narrow to one
+
+Once you know which you want, filter exactly rather than taking `[0]`:
+
+```python
+hits = [a for a in ei
+        if a['name'] == 'market for electricity, medium voltage'
+        and a['location'] == 'DK']
+
+print(len(hits), 'match')          # expect exactly 1
+act = hits[0]
+print(act['name'], '|', act['location'], '|', act['code'])
+```
+
+If `len(hits)` is not 1, do not proceed — either the filter is too loose, or the exact name
+is different from what you assumed. `[0]` on an unchecked list is how the wrong activity
+ends up in a study.
+
+Keep the **code**, not the `id`, if you are recording which activity you used — see
+`linking.md`.
+
+---
+
 ## Calculate the impact of one process
 
 ```python

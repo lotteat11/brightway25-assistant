@@ -140,6 +140,12 @@ pasted and run unchecked.
 | Allocation setting | No setting — pre-calculate, or use a `substitution` exchange |
 | Contribution tree view | `bwa.print_recursive_calculation(act, key, amount=1, max_level=2)` |
 
+**Choosing an ecoinvent activity** is a modelling decision, not a search problem. Print
+`location`, `reference product` and `name` together, and check `len(hits) == 1` before
+taking `[0]`. The distinction people get wrong most often is *market for X* (includes
+distribution and the regional supply mix — right for something you buy) versus *X
+production* (one specific route).
+
 Two things that surprise people: nothing is resolved by name — an exchange points at an
 exact `(database, code)` pair, so finding the code is its own step; and ecoinvent is
 read-only in practice — copy a process into your foreground with `.copy()` to modify it.

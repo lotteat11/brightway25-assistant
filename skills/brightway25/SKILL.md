@@ -53,7 +53,7 @@ Load these as needed; do not read them all up front.
 
 | File | Use when |
 |---|---|
-| `references/common-tasks.md` | **"How do I actually do X"** — calculate one process, change an amount, copy an ecoinvent process, see contributions, add uncertainty, run Monte Carlo. Also a SimaPro→Brightway mapping |
+| `references/common-tasks.md` | **"How do I actually do X"** — find the right ecoinvent activity, calculate one process, change an amount, copy a process to edit it, see contributions, add uncertainty, run Monte Carlo. Also a SimaPro→Brightway mapping |
 | **"Help me set up X"** | A task, not an error — see *Adapting course code* below before reaching for a notebook file |
 | `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
 | `references/errors.md` | **Any traceback.** Check here first |
