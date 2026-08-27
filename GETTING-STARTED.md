@@ -1,11 +1,11 @@
 # Getting started
 
 From nothing to a working setup where your AI tool knows Brightway 2.5. Around
-**30–60 minutes** the first time, plus the ecoinvent download.
+**20–30 minutes**, plus the ecoinvent download.
 
 Four steps:
 
-1. [The Python environment](#1-the-python-environment) — 10 min
+1. [The Python environment](#1-the-python-environment) — one command, ~5 min
 2. [The AI assistant](#2-the-ai-assistant) — 10 min
 3. [Course notebooks](#3-course-notebooks-optional) — optional, 2 min
 4. [ecoinvent](#4-ecoinvent) — 5 min setup, 10–30 min download
@@ -19,29 +19,65 @@ Step 4 can wait until you need background data.
 
 ## 1. The Python environment
 
-You need **conda**. If you do not have it,
-[Miniforge](https://github.com/conda-forge/miniforge#download) is a good default — free,
-and works on macOS, Windows and Linux.
-
-Open a terminal (macOS: Terminal · Windows: **Anaconda Prompt**, not PowerShell):
-
 ```bash
 git clone https://github.com/lotteat11/brightway25-assistant.git
 cd brightway25-assistant
+bash setup.sh
+```
 
+That is it. The script:
+
+- finds a suitable Python (3.10 or newer)
+- creates a virtual environment in `.venv`
+- installs Brightway 2.5, ecoinvent tooling, numpy/pandas/scipy/matplotlib, SALib and
+  JupyterLab
+- registers a Jupyter kernel called **Python (bw25)**
+- creates a `my-project/` folder with a working example notebook
+
+Around five minutes. Safe to run again — it skips whatever already exists.
+
+**Windows:** run it from **Git Bash** (installed with
+[Git for Windows](https://git-scm.com/download/win)), not PowerShell.
+
+**No Python at all?** The script says so and tells you where to get it:
+
+| | |
+|---|---|
+| macOS | `brew install python@3.11` or [python.org](https://www.python.org/downloads/) |
+| Windows | [python.org](https://www.python.org/downloads/) — tick *Add python.exe to PATH* |
+| Linux | `sudo apt install python3.11 python3.11-venv` |
+
+**Prefer conda?** Use that instead:
+
+```bash
 conda env create -f environment.yml
 conda activate bw25
 python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
 ```
 
-That last line registers the environment so Jupyter can see it. **Do not skip it** — it
-is the root of most later problems.
+### Where your own work goes
 
-Check it worked:
+The assistant only loads when its folder is the one you have open. So your notebooks live
+**inside** it:
 
-```bash
-python -c "import bw2data, bw2calc; print('OK')"
 ```
+brightway25-assistant/     ← open THIS in VS Code
+├── AGENTS.md              ← the assistant, read automatically
+├── skills/
+└── my-project/            ← your work
+    └── first_lca.ipynb
+```
+
+`setup.sh` creates `my-project/` for you. Name it something else if you like —
+`bash setup.sh thesis-lca` — or add more folders later. Subfolders are fine; the only rule
+is that `AGENTS.md` sits at the root of whatever folder you opened.
+
+### Check it worked
+
+Open `my-project/first_lca.ipynb`, set the kernel (**Kernel → Change Kernel → Python
+(bw25)**), and run all cells. It builds a two-activity system and calculates its footprint.
+
+It should print **80.0 kg CO2-eq**. If it does, the whole stack works.
 
 ---
 
@@ -64,7 +100,7 @@ You are placed on **Copilot Free**, which has a monthly quota — enough for nor
 > with no quota. Verification takes a few days; use Free meanwhile.
 
 **Open the right folder.** The assistant only works when the `brightway25-assistant` folder
-is open in VS Code:
+is open — not a single notebook:
 
 ```
 File → Open Folder… → select brightway25-assistant
@@ -151,11 +187,14 @@ need access provisioned first — your library or research group will know.
 
 Also worth checking: your licence may not cover every version or system model.
 
-### Step 2: Install the package
+### Step 2: The package is already installed
+
+`setup.sh` (and `environment.yml`) install `ecoinvent_interface` for you. If it is somehow
+missing:
 
 ```bash
-conda activate bw25
-conda install -c conda-forge ecoinvent_interface
+.venv/bin/pip install ecoinvent_interface        # venv
+conda install -c conda-forge ecoinvent_interface # conda
 ```
 
 ### Step 3: Run the import

@@ -9,8 +9,8 @@ dependencies:
 
   # Brightway 2.5
   - brightway25
-  - ecoinvent_interface        # ecoinvent import (notebook 3) — needs a licence
-  - stats_arrays               # uncertainty distributions (notebooks 5-6)
+  - ecoinvent_interface        # ecoinvent import — needs a licence
+  - stats_arrays               # uncertainty distributions
 
   # Scientific stack
   - numpy
@@ -19,23 +19,21 @@ dependencies:
   - matplotlib
   - seaborn
 
-  # Sensitivity analysis (notebook 8)
+  # Sensitivity analysis
   - salib
 
   # Notebooks
   - jupyterlab
   - ipykernel
-  - openpyxl                   # Excel reading (notebook 4)
+  - openpyxl                   # Excel reading
 
-# Setup:
+# Conda setup (alternative to setup.sh):
 #
 #   conda env create -f environment.yml
 #   conda activate bw25
 #   python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
-#   jupyter lab
 #
-# Then pick the "Python (bw25)" kernel inside the notebook:
-#   Kernel → Change Kernel → Python (bw25)
+# Then in each notebook: Kernel -> Change Kernel -> Python (bw25)
 #
 # That last step is the one people skip. Creating the environment does not select it,
 # and a notebook running the wrong kernel gives ModuleNotFoundError no matter how many
@@ -43,6 +41,9 @@ dependencies:
 #
 #   import sys; print(sys.executable)
 #
-# The path should contain "bw25".
-#
 # `mamba env create -f environment.yml` is a faster drop-in if you have mamba.
+#
+# ---------------------------------------------------------------------------
+# If you do not use conda, run `bash setup.sh` instead. It builds the same
+# environment with venv and pip, registers the kernel, and creates a project
+# folder for your own work. Everything here is available on PyPI.

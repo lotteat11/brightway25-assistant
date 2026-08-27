@@ -66,22 +66,29 @@ written, and it is where a lot of the friction actually sits.
 
 ## Setup
 
-**→ [GETTING-STARTED.md](GETTING-STARTED.md)** walks through the whole thing: environment,
-AI tool, and ecoinvent. Around 30–60 minutes the first time.
-
 ```bash
 git clone https://github.com/lotteat11/brightway25-assistant.git
 cd brightway25-assistant
-
-conda env create -f environment.yml
-conda activate bw25
-python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
+bash setup.sh
 ```
+
+That is the whole installation. It builds a Python environment, installs Brightway 2.5 and
+the scientific stack, registers a Jupyter kernel, and creates a `my-project/` folder with a
+working example notebook. About five minutes. Safe to run again.
+
+Prefer conda? `conda env create -f environment.yml` instead — see the file for the extra
+steps.
 
 Then open the folder in VS Code (with Copilot) or run `claude` in it.
 
 > **Open the whole folder**, not a single file — that is how the tool finds the
 > instructions.
+
+Your own work goes in `my-project/`, or any subfolder. The only thing that matters is that
+the folder you opened has `AGENTS.md` at its root.
+
+**→ [GETTING-STARTED.md](GETTING-STARTED.md)** covers the rest: the AI tool, ecoinvent
+credentials, and what to do when something breaks.
 
 ### Checking it works
 
@@ -122,8 +129,9 @@ reference list will be added later.
 
 | | |
 |---|---|
+| [`setup.sh`](setup.sh) | One-command setup: environment, kernel, project folder |
 | [`GETTING-STARTED.md`](GETTING-STARTED.md) | Full setup walkthrough |
-| [`environment.yml`](environment.yml) | Conda environment |
+| [`environment.yml`](environment.yml) | Conda alternative to `setup.sh` |
 | [`skills/brightway25/`](skills/brightway25/) | The assistant itself |
 | [`exercises/`](exercises/) | Exercises from the Advanced LCA course notebooks |
 | [`AGENTS.md`](AGENTS.md) | Instructions in the form Copilot and others read |

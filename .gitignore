@@ -2,7 +2,7 @@
 .ipynb_checkpoints/
 */.ipynb_checkpoints/
 
-# Python
+# Python — .venv is created by setup.sh
 __pycache__/
 *.py[cod]
 .venv/
@@ -19,7 +19,10 @@ BWprojects/
 secrets.py
 credentials.json
 
-# Student solutions, if kept locally
+# Your own work — created by setup.sh, not part of the repo
+my-project/
+
+# Solutions, if kept locally
 exercises/solutions/
 
 # OS
