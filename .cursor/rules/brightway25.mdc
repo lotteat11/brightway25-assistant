@@ -130,10 +130,24 @@ LCIA method keys are release-dependent tuples. Look one up instead of recalling 
 [m for m in bd.methods if 'IPCC' in str(m)][:5]
 ```
 
-ecoinvent 3.11 uses a 4-tuple — `('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil',
-'global warming potential (GWP100)')` — not the plausible-looking 3-tuple
-`('IPCC 2021', 'climate change', 'GWP 100a')`. In example code write `method_key = ...`
-with the lookup above it; a filled-in placeholder will get pasted.
+Both the wording and the number of elements change between releases — ecoinvent 3.11 uses a
+4-tuple, older material shows 3-tuples. **Write `method_key = ...` with the lookup above
+it.** Never fill in a key that looks plausible, even a correct-looking one; it will be
+pasted and run unchecked.
+
+## Coming from SimaPro
+
+| SimaPro | Brightway |
+|---|---|
+| Pick a process, click calculate | `bc.LCA({act: 1}, key)` → `.lci()` → `.lcia()` → `.score` |
+| Impact method dropdown | Look the key up in `bd.methods` |
+| Edit a value in a process | Set `exc['amount']`, then `exc.save()` |
+| Allocation setting | No setting — pre-calculate, or use a `substitution` exchange |
+| Contribution tree view | `bwa.print_recursive_calculation(act, key, amount=1, max_level=2)` |
+
+Two things that surprise people: nothing is resolved by name — an exchange points at an
+exact `(database, code)` pair, so finding the code is its own step; and ecoinvent is
+read-only in practice — copy a process into your foreground with `.copy()` to modify it.
 
 ## Two traps worth holding in mind
 

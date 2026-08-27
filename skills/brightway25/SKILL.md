@@ -53,6 +53,7 @@ Load these as needed; do not read them all up front.
 
 | File | Use when |
 |---|---|
+| `references/common-tasks.md` | **"How do I actually do X"** — calculate one process, change an amount, copy an ecoinvent process, see contributions, add uncertainty, run Monte Carlo. Also a SimaPro→Brightway mapping |
 | **"Help me set up X"** | A task, not an error — see *Adapting course code* below before reaching for a notebook file |
 | `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
 | `references/errors.md` | **Any traceback.** Check here first |
@@ -238,13 +239,20 @@ characterises nothing.
 [m for m in bd.methods if 'IPCC' in str(m)][:5]
 ```
 
-ecoinvent 3.11, for instance, uses a 4-tuple:
-`('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil', 'global warming potential (GWP100)')`
-— not the 3-tuple `('IPCC 2021', 'climate change', 'GWP 100a')` that older material and
-plausible-sounding recall both suggest.
+The shape varies: ecoinvent 3.11 uses a **4-tuple** including the database name and a long
+category string, while older material shows 3-tuples like
+`('IPCC 2021', 'climate change', 'GWP 100a')`. Both the wording and the number of elements
+change between releases, which is why recall is unreliable.
 
-In example code, write `method_key = ...` with the lookup line above it. Do not fill in a
-placeholder that looks real; someone will paste it.
+**In example code, write `method_key = ...` with the lookup line above it.** Do not fill in
+a key that looks plausible, even a correct-looking one — it will be pasted and run, and the
+person will not check. Print the candidates and let them choose:
+
+```python
+for m in bd.methods:
+    if 'IPCC' in str(m):
+        print(m)
+```
 
 ## Two traps worth holding in mind
 

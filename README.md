@@ -151,6 +151,7 @@ reference list will be added later.
 
 | File | Contents |
 |---|---|
+| [`common-tasks.md`](skills/brightway25/references/common-tasks.md) | Runnable recipes for everyday jobs — calculate one process, change an amount, copy an ecoinvent process, contribution analysis, uncertainty, Monte Carlo. Includes a SimaPro→Brightway mapping |
 | [`lca-in-brightway.md`](skills/brightway25/references/lca-in-brightway.md) | How Brightway represents LCA: sign conventions, exchange types, substitution and why there is no allocation setting, the A/B matrices, uncertainty on exchanges |
 | [`errors.md`](skills/brightway25/references/errors.md) | 25 error messages → cause → fix. Database, calculation, ecoinvent, environment and Python errors |
 | [`linking.md`](skills/brightway25/references/linking.md) | Foreground-to-background linking: the three code formats, finding the right ecoinvent activity, spreadsheet import columns, and a diagnostic loop for broken links |
