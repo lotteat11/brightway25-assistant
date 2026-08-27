@@ -168,6 +168,16 @@ Also worth knowing without looking anything up:
   and interrupting it can leave a half-imported project
 - "Not able to determine geocollections" is a harmless warning, not a failure
 
+**After the import, verify it before anyone builds on it.** `setup.md` has a check that
+counts activities, flows and methods and runs one real LCA — every partial-import failure
+produces a project that looks fine at `list(bd.databases)` and fails weeks later.
+
+**System model is a methodological choice.** `cutoff`, `consequential`, `apos` — part of the
+database name, so changing it means re-importing and rewriting every link. If someone does
+not know which their project needs, say to ask their supervisor rather than picking for
+them. Teaching material often shows `consequential`; that is one course's choice, not a
+default.
+
 Full checklist in `references/setup.md`.
 
 ## The course notebooks

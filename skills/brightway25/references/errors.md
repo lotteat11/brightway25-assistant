@@ -155,6 +155,41 @@ Diagnose the kernel before suggesting any install.
 **Fix:** `import os; print(os.getcwd())` — the file must sit beside the notebook or
 script.
 
+### `AttributeError: module 'bw2io' has no attribute 'import_ecoinvent_release'`
+
+**The most likely first traceback when following the ecoinvent instructions.** Not a
+credentials problem — the function was never found, so nothing was ever sent to ecoinvent.
+
+Two causes, in this order:
+
+**1. The kernel is not the environment you installed into.** Check before anything else:
+
+```python
+import sys, bw2io
+print(sys.executable)      # does this path contain your bw25 environment?
+print(bw2io.__version__)
+print(bw2io.__file__)      # where is this bw2io actually coming from?
+```
+
+If `sys.executable` is wrong, fix the kernel — Kernel → Change Kernel. Reinstalling will
+not help.
+
+**2. `bw2io` is too old.** `import_ecoinvent_release` is a Brightway 2.5-era function. In a
+terminal, with the environment active:
+
+```bash
+conda activate bw25
+conda update -c conda-forge bw2io bw2data bw2calc ecoinvent_interface
+# or, for a pip/venv install:
+pip install -U bw2io bw2data bw2calc ecoinvent_interface
+```
+
+Then **restart the kernel** — updating packages does nothing to a kernel that is already
+running.
+
+Do not install from inside a notebook cell (`!conda install`): it may target a different
+Python than the kernel. Use a terminal, then restart the kernel.
+
 ### `ecoinvent_interface` authentication failures
 
 **Check this first, before anything else:** has the user logged in at

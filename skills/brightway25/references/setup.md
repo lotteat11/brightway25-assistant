@@ -211,12 +211,25 @@ import bw2io as bi
 
 bi.import_ecoinvent_release(
     version='3.11',
-    system_model='consequential',
+    system_model='cutoff',       # 'cutoff' / 'consequential' / 'apos'
     username='...', password='...')
 ```
 
-Arguments are **strings**: `'3.11'`, not `3.11`. System models: `'cutoff'`,
-`'consequential'`, `'apos'` — availability varies by version.
+Arguments are **strings**: `'3.11'`, not `3.11`.
+
+**Choosing the system model is a methodological decision, and expensive to change.** It is
+part of the database name, so every link in a foreground model points at one specific
+choice; switching means re-importing and rewriting every link, since activity codes differ
+between system models too.
+
+`cutoff` is what most attributional studies use; `consequential` for consequential studies;
+`apos` for allocation at the point of substitution. If someone does not already know which
+their project needs, the answer is to ask their supervisor or check the study protocol —
+say so plainly rather than choosing for them.
+
+Teaching material often shows `consequential` because a particular course chose it. That is
+not a default. Also check the licence covers the combination — not every licence includes
+every version and system model.
 
 The import brings a biosphere database with it — no separate `bw2setup()` in 2.5. **Its
 name varies by release**: recent imports use `ecoinvent-3.11-biosphere`, older setups
@@ -306,6 +319,67 @@ project duplicates the data.
 bd.projects.report()    # names, database counts, sizes in GB
 ```
 Useful when a student's laptop fills up mid-course.
+
+---
+
+## Verifying the ecoinvent import
+
+Different question from "does Brightway run" — this checks that ecoinvent arrived intact.
+Worth running before building anything on top of it, because every partial-import failure
+mode produces a project that *looks* fine at `list(bd.databases)` and fails weeks later as
+a zero score or an `UnknownObject`.
+
+```python
+import sys
+import bw2data as bd
+import bw2calc as bc
+
+print(sys.executable)                    # the environment you installed into?
+bd.projects.set_current('my_project')
+print(list(bd.databases))                # copy the exact names from here
+```
+
+Then check the contents are the right order of magnitude:
+
+```python
+ei  = bd.Database('...')                 # paste your ecoinvent name
+bio = bd.Database('...')                 # paste your biosphere name
+
+print(len(ei),  'activities')            # tens of thousands
+print(len(bio), 'biosphere flows')       # thousands
+print(len(bd.methods), 'LCIA methods')   # hundreds to low thousands
+```
+
+Exact counts vary by version and system model, so treat these as orders of magnitude, not
+targets. What matters is that nothing is zero or in the single digits — that means the
+import did not complete, and the fix is to delete the project and redo it rather than build
+on it.
+
+Finally, one real calculation end to end. This exercises the databases, the links between
+them, and the LCIA methods together:
+
+```python
+for m in bd.methods:                     # never type a method key from memory
+    if 'IPCC' in str(m) and 'GWP100' in str(m):
+        print(m)
+
+method_key = ...                         # paste one of the printed keys
+
+hits = [a for a in ei
+        if a['name'] == 'market for electricity, medium voltage'
+        and a['location'] == 'DK']       # or any location in your region
+print(len(hits), 'match')                # expect exactly 1
+act = hits[0]
+
+lca = bc.LCA({act: 1}, method_key)
+lca.lci()
+lca.lcia()
+print(lca.score, bd.methods[method_key]['unit'])
+```
+
+A plausible non-zero number means everything works. A score of exactly `0.0` means
+something is unlinked — see `linking.md`. An error at `.lci()` usually means the biosphere
+database is missing or misnamed.
 
 ---
 
