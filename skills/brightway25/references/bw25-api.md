@@ -2,7 +2,7 @@
 
 **Read this before answering any API question from memory.** Model training data is
 saturated with Brightway 2 idioms that no longer work. A confident wrong answer here costs
-a student an hour.
+real time.
 
 ---
 
@@ -19,16 +19,15 @@ import bw2io as bi        # importers (ecoinvent, Excel)
 import brightway2 as bw   # Brightway 2 umbrella import
 ```
 
-**Exception:** `Project_create_and_locate.ipynb` uses the legacy import. It is the odd one
-out in this folder. If a student is following that notebook, meet them where they are —
-but flag that notebooks 0–8 use the `bd`/`bc` convention, or the mismatch will confuse
-them later.
+You will still meet the legacy import in older scripts and in some teaching material. If
+someone is following a source that uses it, meet them where they are — but flag the
+mismatch, or it will confuse them when they move between sources.
 
 ---
 
 ## Brightway 2 vs 2.5 — what actually changed
 
-People arrive here from old tutorials, old notebooks, colleagues' scripts, and AI
+Old code arrives from published supplements, colleagues' scripts, older tutorials, and AI
 assistants working from memory. Understanding *what* changed makes old code translatable
 instead of just broken.
 
@@ -75,7 +74,8 @@ mc.lci(); mc.lcia()
 results = [mc.score for _ in zip(range(500), mc)]
 ```
 
-`MonteCarloLCA` does not exist. If someone's code imports it, they are on an old tutorial.
+`MonteCarloLCA` does not exist in 2.5. Code that imports it came from a Brightway 2
+source.
 
 **Activities have both `code` and `id`.** `id` (an integer, the matrix coordinate) is
 much more prominent in 2.5. It is installation-specific — never use it for linking or
@@ -136,7 +136,7 @@ db.delete()
 
 `.search()` is full-text over names. On ecoinvent expect many near-identical hits
 differing by location or system model — **which one to pick is a method question**, not a
-search-syntax question. Tutor it.
+search-syntax question.
 
 ---
 
@@ -160,8 +160,8 @@ act.technosphere(); act.biosphere(); act.production()
 ```
 
 `code` vs `id`: `code` is what you share and reference; `id` is an internal matrix
-coordinate that differs between installations. Students conflate them. Notebook 2 makes
-the point, and it ties directly to the matrix picture in notebook 0.
+coordinate that differs between installations. These get conflated often — and it ties
+directly to the matrix formulation: `id` is a coordinate in A.
 
 ---
 
@@ -221,8 +221,9 @@ lca.characterized_inventory
 lca.technosphere_matrix; lca.biosphere_matrix
 ```
 
-Order matters: `lci()` before `lcia()` before `.score`. This mirrors notebook 0's algebra
-exactly — worth pointing out, it makes the API feel less arbitrary.
+Order matters: `lci()` before `lcia()` before `.score`. This mirrors the underlying
+algebra exactly — `lci()` solves `s = A⁻¹f` and `g = Bs`; `lcia()` applies `CF · g`.
+Saying so makes the API feel less arbitrary.
 
 Recalculating after changing the demand:
 ```python
@@ -232,7 +233,7 @@ lca.redo_lcia({other_act: 1})
 
 ---
 
-## Monte Carlo (notebooks 5–6)
+## Monte Carlo
 
 ```python
 mc = bc.LCA({act: 1000}, method_key, use_distributions=True)
@@ -265,9 +266,9 @@ Two things students get wrong here:
 
 Uncertainty type codes: `0` undefined, `1` no uncertainty, `2` lognormal, `3` normal,
 `4` uniform, `5` triangular. Prefer the named constants (`LognormalUncertainty.id`,
-`NormalUncertainty.id`, …) — that is what the notebooks use.
+`NormalUncertainty.id`, …) rather than bare integers.
 
-**Comparative MC — the core of notebook 6:**
+**Comparative Monte Carlo — dependent sampling:**
 ```python
 mc = bc.LCA(demand_a, method_key, use_distributions=True)
 mc.lci(); mc.lcia()
@@ -280,7 +281,7 @@ The shared draw is what makes paired tests valid.
 
 ---
 
-## Ecoinvent import (notebook 3)
+## Ecoinvent import
 
 ```python
 import bw2io as bi
@@ -297,7 +298,7 @@ Version and system model are strings: `'3.11'`, `'3.10'`; `'cutoff'`, `'conseque
 
 ---
 
-## Sensitivity analysis (notebooks 7–8)
+## Sensitivity analysis
 
 OAT — perturb, recompute, compare:
 ```python

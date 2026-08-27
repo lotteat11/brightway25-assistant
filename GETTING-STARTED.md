@@ -1,31 +1,29 @@
-# Kom i gang
+# Getting started
 
-Denne guide tager dig fra ingenting til en fungerende opsætning, hvor din AI-assistent
-kender Brightway 2.5. Regn med **30–60 minutter** første gang, plus ventetid på
-ecoinvent-download.
+From nothing to a working setup where your AI tool knows Brightway 2.5. Around
+**30–60 minutes** the first time, plus the ecoinvent download.
 
-Du skal igennem fire ting:
+Four steps:
 
-1. [Installer Python-miljøet](#1-python-miljøet) — 10 min
-2. [Sæt AI-assistenten op](#2-ai-assistenten) — 10 min
-3. [Hent kursusmaterialet](#3-kursusmaterialet) — 2 min
-4. [Hent ecoinvent](#4-ecoinvent) — 5 min opsætning + 10–30 min download
+1. [The Python environment](#1-the-python-environment) — 10 min
+2. [The AI assistant](#2-the-ai-assistant) — 10 min
+3. [Course notebooks](#3-course-notebooks-optional) — optional, 2 min
+4. [ecoinvent](#4-ecoinvent) — 5 min setup, 10–30 min download
 
-Gå i rækkefølge. Punkt 4 kan vente til notebook 3.
+Step 4 can wait until you need background data.
 
-> **Hvis noget går galt:** spring til [Når det driller](#når-det-driller) nederst. De tre
-> hyppigste problemer står der, og du kan også bare spørge AI-assistenten — den er sat op
-> til at kende netop disse fejl.
+> **If something breaks**, jump to [When it doesn't work](#when-it-doesnt-work). You can
+> also just ask the assistant — it is set up to recognise these specific failures.
 
 ---
 
-## 1. Python-miljøet
+## 1. The Python environment
 
-Du skal bruge **conda**. Har du det ikke, installer
-[Miniforge](https://github.com/conda-forge/miniforge#download) (anbefalet, gratis, virker
-på Mac/Windows/Linux).
+You need **conda**. If you do not have it,
+[Miniforge](https://github.com/conda-forge/miniforge#download) is a good default — free,
+and works on macOS, Windows and Linux.
 
-Åbn en terminal (Mac: Terminal · Windows: **Anaconda Prompt**, ikke PowerShell):
+Open a terminal (macOS: Terminal · Windows: **Anaconda Prompt**, not PowerShell):
 
 ```bash
 git clone https://github.com/lotteat11/brightway25-assistant.git
@@ -36,10 +34,10 @@ conda activate bw25
 python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
 ```
 
-Den sidste linje registrerer miljøet, så Jupyter kan se det. **Spring den ikke over** —
-det er den hyppigste kilde til problemer senere.
+That last line registers the environment so Jupyter can see it. **Do not skip it** — it
+is the root of most later problems.
 
-Tjek at det virker:
+Check it worked:
 
 ```bash
 python -c "import bw2data, bw2calc; print('OK')"
@@ -47,42 +45,40 @@ python -c "import bw2data, bw2calc; print('OK')"
 
 ---
 
-## 2. AI-assistenten
+## 2. The AI assistant
 
-Vælg ét af de to. **Copilot er gratis** og det oplagte valg, hvis du ikke allerede har
-noget.
+Pick either. **Copilot is free** and the obvious choice if you have nothing set up.
 
-### Mulighed A: GitHub Copilot i VS Code (gratis)
+### Option A: GitHub Copilot in VS Code (free)
 
-1. Installer [VS Code](https://code.visualstudio.com/)
-2. Opret en [GitHub-konto](https://github.com/signup) hvis du ikke har en
-3. Åbn VS Code → klik **Copilot-ikonet** i statuslinjen nederst → **Use AI Features**
-4. Log ind med din GitHub-konto
+1. Install [VS Code](https://code.visualstudio.com/)
+2. Create a [GitHub account](https://github.com/signup) if you do not have one
+3. Open VS Code → click the **Copilot icon** in the status bar → **Use AI Features**
+4. Sign in with GitHub
 
-Du bliver automatisk sat på **Copilot Free**, som har en månedlig kvote. Det rækker fint
-til kurset.
+You are placed on **Copilot Free**, which has a monthly quota — enough for normal use.
 
-> **Er du studerende?** Ansøg om [GitHub Student Developer Pack](https://education.github.com/pack)
-> og få Copilot Pro gratis — ingen kvote. Verificering tager typisk et par dage, så start
-> med Free imens.
+> **Student or academic?** Apply for the
+> [GitHub Student Developer Pack](https://education.github.com/pack) or
+> [GitHub Education for teachers](https://education.github.com/teachers) for Copilot Pro
+> with no quota. Verification takes a few days; use Free meanwhile.
 
-**Vigtigt — åbn den rigtige mappe.** Assistenten virker kun, når `brightway25-assistant`-mappen
-er åben i VS Code:
+**Open the right folder.** The assistant only works when the `brightway25-assistant` folder
+is open in VS Code:
 
 ```
-File → Open Folder… → vælg brightway25-assistant
+File → Open Folder… → select brightway25-assistant
 ```
 
-VS Code læser så automatisk `AGENTS.md` og `.github/copilot-instructions.md`. Du skal ikke
-gøre noget aktivt. Åbner du en notebook alene uden mappen, får du en almindelig Copilot
-uden Brightway-viden.
+VS Code then reads `AGENTS.md` and `.github/copilot-instructions.md` automatically. Opening
+a single notebook without the folder gives you a plain Copilot with no Brightway knowledge.
 
-Du får også brug for **Jupyter**-udvidelsen til at køre notebooks (VS Code foreslår den
-selv, når du åbner en `.ipynb`-fil).
+You will also want the **Jupyter** extension to run notebooks — VS Code offers it when you
+open a `.ipynb` file.
 
-### Mulighed B: Claude Code
+### Option B: Claude Code
 
-Kræver et Claude-abonnement eller en API-nøgle.
+Requires a Claude subscription or API key.
 
 ```bash
 npm install -g @anthropic-ai/claude-code
@@ -90,77 +86,79 @@ cd brightway25-assistant
 claude
 ```
 
-Claude Code læser `skills/brightway25/` automatisk. Denne version er den grundigste —
-den henter detaljerede opslagsfiler ind efter behov.
+Claude Code reads `skills/brightway25/` automatically. This is the fullest version — it
+pulls in detailed reference files as they become relevant.
 
-### Virker det?
+### Checking it works
 
-Spørg din assistent:
+Ask your assistant:
 
-> *Hvordan laver jeg en Monte Carlo-simulering i Brightway 2.5?*
+> *How do I run a Monte Carlo simulation in Brightway 2.5?*
 
-**Rigtigt svar** nævner `bc.LCA(..., use_distributions=True)`.
-**Forkert svar** nævner `MonteCarloLCA` — så læser den ikke instruktionerne. Tjek at du
-har åbnet hele mappen, ikke bare en enkelt fil.
+**Correct** answers mention `bc.LCA(..., use_distributions=True)`.
+**Wrong** answers mention `MonteCarloLCA` — the instructions are not being read. Check that
+you opened the whole folder rather than a single file.
 
 ---
 
-## 3. Kursusmaterialet
+## 3. Course notebooks (optional)
 
-Notebooks ligger i Massimos repo og hentes separat:
+Only relevant if you are following the Advanced LCA course. The assistant works fine
+without them.
 
 ```bash
 git clone https://github.com/massimopizzol/advanced-lca-notebooks.git
 ```
 
-Du skal bruge mappen `Course-material-bw25`. Læg den gerne ved siden af
-`brightway25-assistant`, eller flyt den ind i mappen — begge dele virker.
+The material is in `Course-material-bw25`. Put it next to `brightway25-assistant` or inside
+it — either works.
 
-Åbn en notebook og **vælg den rigtige kernel**:
+When you open a notebook, **select the right kernel**:
 
 ```
 Kernel → Change Kernel → Python (bw25)
 ```
 
-Dette trin bliver glemt hele tiden. Uden det får du `ModuleNotFoundError`, uanset hvor
-mange gange du installerer.
+This step gets missed constantly. Without it you get `ModuleNotFoundError` no matter how
+many times you reinstall.
 
 ---
 
-## 4. Ecoinvent
+## 4. ecoinvent
 
-**Det er her, de fleste går i stå.** Tag trinene i rækkefølge — hvert trin udelukker en
-hel type problem. Bruges fra notebook 3.
+Take these in order — each step rules out a whole class of failure.
 
-### Trin 0: Log ind på hjemmesiden og accepter aftalen
+### Step 0: Log in on the website and accept the agreement
 
-> **Det vigtigste trin, og det der oftest springes over.**
+> **The step that gets skipped, and the most common cause of authentication failure.**
 
-Gå til [ecoinvent.org](https://ecoinvent.org), log ind, og **accepter licensaftalen og
-databehandlingsaftalen**.
+Go to [ecoinvent.org](https://ecoinvent.org), log in, and **accept the licence agreement
+and the personal-data agreement**.
 
-Har du aldrig logget ind i en browser, **virker din konto ikke fra Python** — uanset at
-brugernavn og kodeord er rigtige. Og fejlbeskeden siger ikke noget om aftaler, så du kan
-lede længe.
+If you have never logged in through a browser, **your account will not work from Python** —
+regardless of the username and password being correct. The error message says nothing about
+agreements, so this can cost a lot of time.
 
-Virker login på hjemmesiden ikke, hjælper det ikke at prøve i Python.
+If logging in on the website fails, nothing in Python will help.
 
-### Trin 1: Tjek at du har en rigtig ecoinvent-konto
+### Step 1: Confirm you have a direct ecoinvent account
 
-Bruger du normalt ecoinvent gennem AAU's portal, har du måske **ikke** et direkte
-brugernavn og kodeord. Det er ikke det samme som dit AAU-login.
+If you normally reach ecoinvent through a university portal, you may **not** have a direct
+username and password. Institutional SSO is not the same thing.
 
-Kan du logge ind direkte på ecoinvent.org med brugernavn og kodeord? Så er du klar.
-Ellers skal du have oprettet adgang først — spørg din vejleder eller biblioteket.
+Can you log in at ecoinvent.org with a username and password? Then you are set. If not, you
+need access provisioned first — your library or research group will know.
 
-### Trin 2: Installer pakken
+Also worth checking: your licence may not cover every version or system model.
+
+### Step 2: Install the package
 
 ```bash
 conda activate bw25
 conda install -c conda-forge ecoinvent_interface
 ```
 
-### Trin 3: Kør importen
+### Step 3: Run the import
 
 ```python
 import bw2io as bi
@@ -168,130 +166,129 @@ import bw2io as bi
 bi.import_ecoinvent_release(
     version='3.11',
     system_model='consequential',
-    username='DIT-BRUGERNAVN',
-    password='DIT-KODEORD')
+    username='YOUR-USERNAME',
+    password='YOUR-PASSWORD')
 ```
 
-Bemærk at `version` og `system_model` er **tekst** — `'3.11'` med anførselstegn, ikke
-`3.11`. Systemmodeller: `'cutoff'`, `'consequential'`, `'apos'`.
+`version` and `system_model` are **strings** — `'3.11'` in quotes, not `3.11`. System
+models: `'cutoff'`, `'consequential'`, `'apos'`.
 
-### Trin 4: Vent — og afbryd ikke
+### Step 4: Wait — do not interrupt
 
-**Importen tager 10–30 minutter uden nogen fremdriftsindikator.** Cellen viser `[*]` og
-ser fuldstændig død ud.
+**The import takes 10–30 minutes with no progress bar.** The cell shows `[*]` and looks
+completely dead.
 
-> **Den er ikke gået i stå.** Lad den køre.
+> **It is not stuck.** Let it run.
 
-Afbryder du, kan du ende med en halvt importeret database, der fejler på forvirrende måder
-bagefter. Er det allerede sket, er det hurtigste at slette projektet og starte forfra:
+Interrupting can leave a half-imported database that fails confusingly afterwards. If that
+has already happened, the fastest fix is to delete the project and start over:
 
 ```python
 import bw2data as bd
-bd.projects.delete_project('projektnavn', delete_dir=True)
+bd.projects.delete_project('project_name', delete_dir=True)
 ```
 
-Vær opmærksom på **pladsen**: hvert ecoinvent-projekt fylder flere GB.
+Watch disk space: each ecoinvent project runs to several GB.
 
 ---
 
-### Undgå at dit kodeord ender i notebooken
+### Keeping credentials out of notebooks
 
-Deler du din notebook, følger kodeordet med. Vælg én af disse:
+If you share a notebook, the password goes with it. Pick one:
 
-**Spørg hver gang** — intet gemmes:
+**Prompt each time** — nothing stored:
 ```python
 import getpass
-username = input('ecoinvent brugernavn: ')
-password = getpass.getpass('ecoinvent kodeord: ')
+username = input('ecoinvent username: ')
+password = getpass.getpass('ecoinvent password: ')
 ```
 
-**Gem det én gang** — så skal du aldrig skrive det igen:
+**Store once** — then never pass credentials again:
 ```python
 from ecoinvent_interface import permanent_setting
-permanent_setting("username", "dit-brugernavn")
-permanent_setting("password", "dit-kodeord")
+permanent_setting("username", "your-username")
+permanent_setting("password", "your-password")
 ```
-Derefter kan du kalde `import_ecoinvent_release()` uden `username` og `password`.
+After that, `import_ecoinvent_release()` works without `username` and `password`.
 
 ---
 
-### Når det stadig ikke virker
+### When ecoinvent still fails
 
-| Symptom | Sandsynlig årsag |
+| Symptom | Likely cause |
 |---|---|
-| Login afvises, men kodeordet er rigtigt | Aftalen er ikke accepteret på hjemmesiden — **trin 0** |
-| Du har aldrig logget ind i browseren | Samme — gå til ecoinvent.org først |
-| Virker hos en kollega, ikke hos dig | Jeres licenser dækker forskellige versioner |
-| `version` eller `system_model` afvises | Skrevet som tal i stedet for tekst, eller ikke dækket af din licens |
-| Cellen kører i det uendelige | Normalt. 10–30 min. Afbryd ikke |
-| Importen fejlede, og nu opfører den sig sært | Halvt importeret projekt — slet det og start forfra |
-| *"Not able to determine geocollections"* | **Harmløs advarsel.** Importen lykkedes |
+| Login rejected, credentials are correct | Agreement not accepted on the website — **step 0** |
+| Never logged in through a browser | Same — go to ecoinvent.org first |
+| Works for a colleague, not for you | Your licences cover different versions |
+| `version` or `system_model` rejected | Passed as a number instead of a string, or not covered by your licence |
+| Cell runs forever | Normal. 10–30 min. Do not interrupt |
+| Import failed, now behaving oddly | Half-imported project — delete it and start over |
+| *"Not able to determine geocollections"* | **Harmless warning.** The import succeeded |
 
-Er du stadig blokeret, så spørg assistenten og indsæt hele fejlbeskeden — den kender netop
-disse problemer.
+Still stuck? Ask the assistant and paste the full error — it knows these specific failures.
 
 ---
 
-## Når det driller
+## When it doesn't work
 
 ### `ModuleNotFoundError: No module named 'bw2data'`
 
-Det hyppigste problem. Pakken er der — notebooken kører bare på en anden Python.
+The most common problem by a distance. The package is installed — the notebook is just
+running a different Python.
 
-Kør dette i notebooken:
+Run this in the notebook:
 
 ```python
 import sys; print(sys.executable)
 ```
 
-Står der ikke `bw25` i stien, er kernen forkert:
+If the path does not contain `bw25`, the kernel is wrong:
 **Kernel → Change Kernel → Python (bw25)**
 
-**Installer ikke igen.** Det installerer bare det samme det forkerte sted.
+**Do not reinstall.** It will install the same package into the same wrong place.
 
 ### `Database ... is locked`
 
-To notebooks er åbne på samme projekt. Luk de andre (i Jupyter: fanen **Running** →
-Shutdown), eller genstart kernen.
+Two notebooks are open on the same project. Close the others (Jupyter: **Running** tab →
+Shutdown), or restart the kernel.
 
-Tommelfingerregel: **én notebook ad gangen per projekt.**
+Rule of thumb: **one notebook per project at a time.**
 
-### AI'en foreslår kode der ikke virker
+### The AI suggests code that doesn't work
 
-Foreslår den `import brightway2 as bw` eller `MonteCarloLCA`, bruger den den gamle
-Brightway 2. Sig til den:
+If it proposes `import brightway2 as bw` or `MonteCarloLCA`, it is using Brightway 2. Tell
+it:
 
-> *Det er Brightway 2. Vi bruger Brightway 2.5 — brug bw2data og bw2calc.*
+> *That's Brightway 2. We're on Brightway 2.5 — use bw2data and bw2calc.*
 
-Sker det tit, læser den ikke instruktionerne. Tjek at hele `brightway25-assistant`-mappen er
-åben.
+If it happens repeatedly, the instructions are not being read. Check that the whole folder
+is open.
 
-### Noget helt tredje
+### Something else
 
-Spørg assistenten og indsæt hele fejlbeskeden. Den kender de fejl, der er typiske på dette
-kursus. Kopier hele beskeden med — også det der ser irrelevant ud.
+Ask the assistant and paste the entire error message — including the parts that look
+irrelevant.
 
 ---
 
-## Sådan bruger du den
+## Using it
 
-Den er en **kodeassistent**. Spørg løs, som du ville spørge en kollega:
+It is a **coding assistant**. Ask the way you would ask a colleague:
 
-- *"Hvorfor giver den her celle en fejl?"* — indsæt fejlbeskeden
-- *"Skriv koden der tilføjer lognormal usikkerhed til den her exchange"*
-- *"Hvordan finder jeg elproduktion i Danmark i ecoinvent?"*
-- *"Lav et boxplot af mine Monte Carlo-resultater"*
+- *"Why is this cell failing?"* — paste the traceback
+- *"Write the code to add lognormal uncertainty to this exchange"*
+- *"How do I find Danish medium-voltage electricity in ecoinvent?"*
+- *"My foreground imports but the score is zero"*
+- *"Plot my Monte Carlo results as a boxplot"*
 
-Den skriver koden og forklarer kort. Den holder ikke svar tilbage.
+It writes the code and explains briefly. It does not withhold answers.
 
-**Vil du hellere lære det end få svaret?** Så sig det:
+**Want to work it out instead?** Say so:
 
-- *"Forklar det i stedet for at give mig svaret"*
-- *"Hjælp mig med at forstå hvorfor det virker"*
+- *"Explain it instead of giving me the answer"*
+- *"Help me understand why this works"*
 
-Så stiller den spørgsmål og giver hints i stedet. Du kan altid afbryde med *"bare vis mig
-det"*.
+It then switches to hints and analogous examples. *"Just show me"* ends that immediately.
 
-**Assistenten finder ikke på referencer.** Spørger du, hvor en metode kommer fra, siger
-den, at den ikke har kilden — i stedet for at gætte på en forfatter og et årstal. Kig i
-notebooken eller slides.
+**On references:** the assistant will not invent citations. Asked where a method comes
+from, it says it does not have the reference rather than guessing at an author and year.

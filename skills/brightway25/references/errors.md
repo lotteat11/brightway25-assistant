@@ -1,14 +1,13 @@
 # Errors — traceback → cause → fix
 
-Check here first for any traceback. Most errors on this course are one of these.
+Check here first for any traceback. Most Brightway errors are one of these.
 
-**How to use this with a student who is not fluent in Python:** read the *last* line of
-the traceback first — that is the actual error. Everything above it is the call stack.
-Tell them this; many students read from the top, panic at unfamiliar file paths, and
-never reach the line that says what went wrong.
+Read the *last* line of a traceback first — that is the actual error; everything above is
+the call stack. Worth saying out loud, because reading from the top means hitting
+unfamiliar library paths before the message that matters.
 
-Always translate before fixing. `KeyError: ('db', 'act')` means nothing until someone
-says "Python looked for an activity with that name and there isn't one".
+Translate before fixing. `KeyError: ('db', 'act')` says nothing until it becomes "Brightway
+looked for an activity with that code and there isn't one".
 
 ---
 
@@ -67,13 +66,13 @@ on what else is in the database. `code` is a stable string.
 **Fix:** always link by `code`. See `linking.md`.
 
 ### `.write()` seems to succeed but the database is empty
-**Usual cause:** writing a dict built from a DataFrame where `lci_to_bw2()` silently
-dropped rows because of column naming.
+**Usual cause:** the dict was built from a DataFrame and rows were silently dropped —
+usually a column-naming mismatch in the conversion.
 **Fix:** `len(db)` before writing; `print(list(db.items())[:1])` to inspect one entry.
 
 ### `Not able to determine geocollections for all datasets`
-**Not an error.** A warning about regionalization, irrelevant to this course. Reassure and
-move on — students often stop here thinking the import failed.
+**Not an error.** A warning about regionalization. Easy to mistake for a failed import —
+say so and move on.
 
 ---
 
@@ -82,15 +81,15 @@ move on — students often stop here thinking the import failed.
 ### `AttributeError: 'LCA' object has no attribute 'score'`
 **Means:** you asked for the result before computing it.
 **Fix:** `lca.lci()` then `lca.lcia()`, *then* `.score`. `lci()` solves the inventory,
-`lcia()` characterises it — this ordering is a method point, not just an API quirk. Good
-moment to tutor briefly.
+`lcia()` characterises it — the ordering reflects the two computational steps, not an API
+quirk.
 
 ### `Nonsquare matrix` / `singular matrix` / `LinAlgError`
 **Means:** A cannot be inverted.
 **Usual causes:** an activity with no production exchange; a product produced by nothing;
 a duplicated activity code.
 **Fix:** check every activity has exactly one production exchange. Conceptually: each
-column must produce exactly one product. Ties back to notebook 0.
+column must produce exactly one product.
 
 ### `ImportError: cannot import name 'MonteCarloLCA'`
 **Means:** legacy Brightway 2 code. Removed in 2.5.
@@ -100,20 +99,20 @@ mc = bc.LCA(demand={act: 1}, method=m, use_distributions=True)
 mc.lci(); mc.lcia()
 results = [mc.score for _ in zip(range(500), mc)]
 ```
-See `bw25-api.md`. Note this is a likely wrong answer from a general AI assistant.
+See `bw25-api.md`. This is a common wrong answer from a general AI assistant.
 
 ### Monte Carlo returns identical values every iteration
 **Usual causes:** `use_distributions=True` omitted; no uncertainty defined on any
 exchange; re-reading `.score` without advancing the iterator.
 **Fix:** confirm exchanges carry `'uncertainty type'` and `scale`. Without uncertainty
-data, MC correctly returns the deterministic result — worth saying, since students assume
-it is broken.
+data, Monte Carlo correctly returns the deterministic result — worth saying, since it
+looks broken.
 
 ### `redo_lcia()` raises, or gives suspicious results
 **Usual cause:** called before the first `lci()`/`lcia()`, or with a demand referring to
 an activity not in the sampled matrix.
 **Fix:** run a full `lci()`/`lcia()` first. Conceptually `redo_lcia()` re-scores under the
-*same* random draw — that reuse is the whole point of notebook 6.
+*same* random draw — that reuse is the entire point of dependent sampling.
 
 ---
 
@@ -126,13 +125,14 @@ but somewhere else.
 ```python
 import sys; print(sys.executable)
 ```
-If that is not your course environment, the kernel is wrong — see `setup.md`. Installing
-again will not help and usually makes it worse. **This is the single most common setup
-problem.** Diagnose the kernel before suggesting any install.
+If that is not the intended environment, the kernel is wrong — see `setup.md`. Installing
+again will not help and usually makes it worse. **The single most common setup problem.**
+Diagnose the kernel before suggesting any install.
 
-### `ImportError: cannot import name 'lci_to_bw2'`
-**Means:** `lci_to_bw2.py` is not in the working directory.
-**Fix:** `import os; print(os.getcwd())` — the file must be beside the notebook.
+### `ImportError` on a local helper module
+**Means:** the `.py` file is not in the working directory.
+**Fix:** `import os; print(os.getcwd())` — the file must sit beside the notebook or
+script.
 
 ### `ecoinvent_interface` authentication failures
 
@@ -184,14 +184,14 @@ reliable.
 ### `TypeError: unhashable type: 'list'`
 **Means:** a list was used where a tuple was needed. Almost always `['db', 'code']`
 instead of `('db', 'code')`.
-**Fix:** square brackets → parentheses. Explain: dict keys must be immutable; tuples are,
-lists are not.
+**Fix:** square brackets → parentheses. Dict keys must be immutable; tuples are, lists are
+not.
 
 ### `TypeError: 'generator' object is not subscriptable` — or a generator prints as empty
 **Means:** `.exchanges()` returns a generator: it produces items once, on demand.
 **Fix:** `excs = list(act.exchanges())`, then index and re-use freely.
-**Common trap:** looping over a generator twice — the second loop silently does nothing.
-This is a *very* common notebook-2 confusion and produces no error at all.
+**Common trap:** looping over a generator twice — the second loop silently does nothing,
+with no error at all.
 
 ### `KeyError: 'amount'` when iterating exchanges
 **Usual cause:** treating an exchange object as a plain dict.
@@ -210,12 +210,11 @@ Usually a row/column mix-up when building the matrices by hand in notebook 0.
 A = np.array([[10., 0.], [-2., 100.]])
 g = B @ np.linalg.inv(A) @ f
 ```
-Do not push students to modernise mid-course; do explain the trap if they have already
-hit it.
+Explain the trap rather than pushing a rewrite.
 
 ### `SettingWithCopyWarning` (pandas)
-**Usually harmless** in notebook 4, but means a slice was modified. If values are not
-updating, use `.copy()` or `.loc[]`.
+**Usually harmless**, but it means a slice was modified. If values are not updating, use
+`.copy()` or `.loc[]`.
 
 ### `FileNotFoundError` on CSV or Excel
 **Fix:** `os.getcwd()`, then check the exact filename including extension. On macOS,

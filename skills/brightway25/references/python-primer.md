@@ -1,13 +1,11 @@
 # Python primer — the idioms these notebooks actually use
 
-Only the patterns that appear in `Course-material-bw25`. Not a Python course.
+The Python patterns that come up constantly in Brightway work. Not a Python course.
 
-Use this when a student is stuck on **Python**, not on LCA. The tell: they understand what
-they want to compute but cannot express it, or they are confused by syntax rather than by
-meaning.
+Use this when **Python** is the obstacle rather than the LCA — when someone knows exactly
+what they want to compute but the syntax is in the way.
 
-**Tone matters here.** These are competent researchers who happen not to write much
-Python. Explain the idiom, never the fact that they should have known it.
+Explain the idiom and move on. No preamble about what they should already know.
 
 ---
 
@@ -96,8 +94,7 @@ for act in db:
         result.append(act)
 ```
 
-If a student finds the comprehension opaque, write the loop — it is not worse code, and
-comprehension fluency is not what is being assessed.
+If the comprehension is opaque, write the loop instead — it is not worse code.
 
 Extracting one field:
 ```python
@@ -122,14 +119,14 @@ list(excs)           # []  ← already consumed! No error.
 excs = list(act.exchanges())    # now reusable, indexable
 ```
 
-This causes bugs with **no traceback** — a second loop just does nothing. If a student
-says "my loop doesn't run", check this first.
+This causes bugs with **no traceback** — a second loop simply does nothing. When a loop
+"doesn't run", check this first.
 
 ---
 
 ## The Monte Carlo idiom
 
-The one line in notebook 5 that stops everyone:
+The idiom that appears in every Brightway Monte Carlo example:
 
 ```python
 mc_results = [mc.score for _ in zip(range(500), mc)]
@@ -142,8 +139,7 @@ Piece by piece:
 - `_` means "I don't need this value" — a convention, not syntax
 - `mc.score` is read *after* each advance
 
-So: *advance the simulation 500 times; collect the score each time.* A plain loop is
-identical and clearer for a beginner:
+So: *advance the simulation 500 times; collect the score each time.* A plain loop is equivalent and often clearer:
 
 ```python
 mc_results = []
@@ -163,7 +159,7 @@ print(f'The score is {lca.score:.2f} kg CO2-eq')
 
 ---
 
-## pandas, minimally (notebooks 4–8)
+## pandas, minimally
 
 ```python
 df = pd.read_csv('mydata.csv')
@@ -175,12 +171,12 @@ df.describe()                   # summary stats — used for MC results
 df['col'].mean()
 ```
 
-For notebook 4, **inspect `df.columns` before debugging the code**. Import failures there
-are nearly always column-name or column-order problems.
+When a spreadsheet import misbehaves, **inspect `df.columns` before debugging the code**.
+Import failures are nearly always column-name or column-order problems.
 
 ---
 
-## numpy, minimally (notebook 0)
+## numpy, minimally
 
 ```python
 A = np.matrix([[10., 0.], [-2., 100.]])
@@ -204,8 +200,9 @@ occasional surprises; floats avoid them.
    your mistake is.
 3. Ignore the rest on first pass.
 
-Students commonly read from the top, hit unfamiliar library paths, and give up before
-reaching the message. Say this out loud when helping — it is a durable skill.
+Reading from the top means hitting unfamiliar library paths first, which is why the actual
+message often goes unseen. Worth saying out loud once — it transfers to every future
+traceback.
 
 ---
 

@@ -1,37 +1,36 @@
 # Brightway 2.5 Assistant
 
-**En AI-kodehjælper der rent faktisk kan Brightway 2.5.**
+**A coding assistant that knows Brightway 2.5.**
 
-Til alle der arbejder med Brightway 2.5 og gerne vil have det til at gøre mindre ondt —
-LCA-forskere, PhD-studerende, konsulenter. Og til studerende på Advanced LCA-kurset på
-Aalborg Universitet, som det oprindeligt blev bygget til.
+For advanced LCA work in Brightway — linking foreground systems to ecoinvent, propagating
+uncertainty, running sensitivity analyses, and getting the software to cooperate. Works
+with GitHub Copilot, Claude Code, Cursor, and anything else that reads `AGENTS.md`.
 
-Du behøver ikke være god til Python. Det er netop pointen.
+Originally built for the Advanced LCA course at Aalborg University; useful for any
+Brightway 2.5 work.
 
 ---
 
-## Hvorfor findes det her
+## The problem it solves
 
-Brightway blev omskrevet fra version 2 til 2.5. API'et ændrede sig grundlæggende:
-`brightway2` blev splittet i `bw2data`, `bw2calc` og `bw2io`, og `MonteCarloLCA`
-forsvandt helt.
+Brightway was rewritten between version 2 and 2.5. The `brightway2` umbrella package split
+into `bw2data`, `bw2calc` and `bw2io`, and `MonteCarloLCA` disappeared entirely.
 
-Men alle de tutorials, blogindlæg og Stack Overflow-svar, som AI-modeller er trænet på,
-er skrevet til den **gamle** version. Så når du spørger Copilot eller ChatGPT om
-Brightway, får du med stor sandsynlighed noget i denne stil:
+Every tutorial, blog post and forum answer written before that — which is most of what
+language models were trained on — describes the **old** API. So a general assistant will
+confidently produce this:
 
 ```python
-import brightway2 as bw                          # findes ikke i 2.5
-mc = MonteCarloLCA({act: 1}, method)             # fjernet i 2.5
+import brightway2 as bw                    # does not exist in 2.5
+mc = MonteCarloLCA({act: 1}, method)       # removed in 2.5
 for _ in range(500):
     next(mc)
 ```
 
-Det ser overbevisende ud. Det virker ikke. Og fordi fejlen er en `ImportError` og ikke
-noget der peger på API-versionen, bruger du en time på at lede efter en fejl, du ikke
-selv har lavet.
+It looks right. It fails with an `ImportError` that says nothing about API versions, so the
+time goes into looking for a mistake that was never yours.
 
-Denne assistent svarer i stedet:
+This assistant answers with the current API:
 
 ```python
 import bw2calc as bc
@@ -40,191 +39,113 @@ mc.lci(); mc.lcia()
 results = [mc.score for _ in zip(range(500), mc)]
 ```
 
-som er den rigtige måde i 2.5.
-
 ---
 
-## Hvordan virker det
+## How it works
 
-Der er ingen server, intet der kører i baggrunden, og ingen model der er trænet om. Det
-er **strukturerede tekstfiler**, som dit AI-værktøj læser, når du åbner mappen.
+No server, no background process, no fine-tuned model. It is a set of structured reference
+files that your AI tool reads when you open the folder.
 
 ```
-Du åbner mappen i VS Code
+Open the folder in VS Code
         ↓
-Copilot læser AGENTS.md automatisk
+Copilot reads AGENTS.md automatically
         ↓
-Du spørger: "hvorfor fejler den her celle?"
+You ask: "why is this cell failing?"
         ↓
-AI'en svarer med Brightway 2.5-viden i konteksten
+The answer comes with Brightway 2.5 knowledge in context
 ```
 
-Instruktionerne indeholder tre slags viden:
+The files carry three kinds of knowledge: what changed between Brightway 2 and 2.5, the
+errors that actually occur and what causes them, and the linking model that connects a
+foreground system to ecoinvent.
 
-**1. Hvad der er lavet om siden Brightway 2.** En oversættelsestabel, så AI'en ikke
-falder tilbage på det, den har lært fra gamle kilder.
-
-| Gammel (Brightway 2) | Brightway 2.5 |
-|---|---|
-| `import brightway2 as bw` | `import bw2data as bd`, `import bw2calc as bc` |
-| `bw.LCA(...)` | `bc.LCA(...)` |
-| `MonteCarloLCA(demand, method)` | `bc.LCA(demand, method, use_distributions=True)` |
-| `bw2setup()` | `bi.import_ecoinvent_release()` henter biosphere med |
-
-**2. De fejl der faktisk opstår.** Ikke generel Python-fejlfinding, men de konkrete
-fejlbeskeder man møder i Brightway — hvad de betyder, og hvad der retter dem. Med særlig
-vægt på ecoinvent, hvor de fleste går i stå.
-
-**3. Kursets struktur.** Hvilken notebook dækker hvad, og hvor folk typisk går i stå.
-Relevant hvis du følger kurset — ellers kan du se bort fra den del.
+**It is self-contained.** No notebooks, repositories or course material need to be present.
 
 ---
 
-## Et par eksempler på forskellen
+## The four things that cost the most time
 
-**Manglende pakke**
+### 1. Getting oriented in Brightway
 
-> `ModuleNotFoundError: No module named 'bw2data'`
-
-*Generisk AI:* "Prøv `pip install bw2data`."
-Det virker ikke, for pakken **er** installeret — notebooken kører bare på en anden
-Python. Man installerer igen. Og igen.
-
-*Denne assistent:* "Kør `import sys; print(sys.executable)`. Står der ikke `bw25` i
-stien, er kernen forkert — Kernel → Change Kernel. Installer ikke igen, det installerer
-bare det samme det forkerte sted."
-
-**Usikkerhed der ser forkert ud**
-
-> "Min Monte Carlo giver helt vanvittige tal."
-
-*Generisk AI:* gætter på fordelingen, foreslår flere iterationer.
-
-*Denne assistent:* ved at `loc` og `scale` i Brightway er **logaritmer** — `np.log(1.2)`,
-ikke `1.2` — og at negative amounts skal negeres først, fordi `np.log()` af et negativt
-tal ikke er defineret. To fejl der ikke giver nogen fejlbesked, bare forkerte tal.
-
-**Kode der ser tom ud**
-
-> "Min løkke over exchanges kører ikke anden gang."
-
-*Generisk AI:* leder efter en logisk fejl i løkken.
-
-*Denne assistent:* ved at `.exchanges()` returnerer en generator, som kun kan bruges én
-gang. Fejlbesked: ingen. Løsningen: `list(act.exchanges())`.
-
----
-
-## De tre ting der er sværest
-
-Tre ting koster erfaringsmæssigt mest tid. Assistenten er bygget om dem.
-
-### 1. Overhovedet at komme i gang
-
-Det svære er sjældent syntaksen — det er ikke at vide, **hvad delene er**, og i hvilken
-rækkefølge man gør tingene.
-
-Et *projekt* er en lukket arbejdsplads. Inde i det ligger tre slags databaser: din egen
-foreground, ecoinvent som background, og biosphere med elementarflows. Databaser
-indeholder *activities*, som indeholder *exchanges* — og en exchange er én pil: "denne
-aktivitet bruger 2 kg af den der".
-
-Hele arbejdsgangen:
+Not syntax — structure. A *project* is a sealed workspace containing a foreground database,
+ecoinvent as background, and a biosphere database of elementary flows. Databases hold
+*activities*; activities hold *exchanges*, and an exchange is one arrow: "this activity
+consumes 2 kg of that".
 
 ```python
-bd.projects.set_current('mit_projekt')     # 1. vælg arbejdsplads
-act = bd.Database('min_foreground').get('min_aktivitet')
-lca = bc.LCA({act: 1}, metode)             # 2. definer funktionel enhed
-lca.lci()                                  # 3. løs inventory
-lca.lcia()                                 # 4. karakterisér
+bd.projects.set_current('my_project')
+act = bd.Database('my_foreground').get('my_activity')
+lca = bc.LCA({act: 1}, method)
+lca.lci()                                  # solve inventory:  s = A⁻¹f,  g = Bs
+lca.lcia()                                 # characterise:     score = CF · g
 print(lca.score)
 ```
 
-`lci()` og `lcia()` er adskilte med vilje: den første svarer på *hvad udledes*, den anden
-på *hvor meget betyder det*. Derfor fejler `.score`, hvis man springer dem over.
+`lci()` and `lcia()` are separate because they answer different questions — what is
+emitted, then how much it matters. That is why `.score` fails if you skip them.
 
-### 2. Forskellen på Brightway 2 og 2.5
+### 2. Brightway 2 versus 2.5
 
-Gamle tutorials, kollegers scripts og AI-svar er fulde af den gamle API. Det meste kan
-oversættes mekanisk — `brightway2` blev delt i `bw2data`, `bw2calc` og `bw2io` — men
-noget ændrede sig i **opførsel**, ikke bare i navn:
+Most old code translates mechanically. Some of it changed *behaviourally*, which is where a
+find-and-replace leaves you with something broken:
 
-| Gammel | Ny |
+| Brightway 2 | Brightway 2.5 |
 |---|---|
-| `MonteCarloLCA(fu, method)` | `bc.LCA(fu, method, use_distributions=True)` og iterér objektet |
-| `bw2setup()` | Ikke nødvendig — ecoinvent-importen henter biosphere med |
-| ecoinvent fra en mappe med filer | `ecoinvent_interface` med licens-login |
+| `import brightway2 as bw` | `import bw2data as bd`, `bw2calc as bc`, `bw2io as bi` |
+| `MonteCarloLCA(fu, method)` | `bc.LCA(fu, method, use_distributions=True)`, then iterate |
+| `bw2setup()` | Not needed — the ecoinvent import brings biosphere with it |
+| ecoinvent from a folder of files | `ecoinvent_interface` with licence credentials |
 
-Gamle projekter på disken kan heller ikke bare åbnes i 2.5.
+Brightway 2 projects on disk are not directly usable in 2.5 either.
 
-Assistenten siger tydeligt, når noget er gammel API — **det er ikke din fejl**, det er
-kilden der er forældet.
+The assistant flags old-API code explicitly — the source is outdated, not you.
 
-### 3. Matching fra foreground til background
+### 3. Linking foreground to background
 
-Den største tidsrøver efter ecoinvent-installationen.
+**Brightway does no fuzzy matching.** An exchange points at exactly one `(database, code)`
+tuple. If nothing is there, the exchange is unlinked and the database will not calculate.
+There is no way to write "electricity, DK" and have Brightway work out what you meant.
 
-**Brightway gætter ikke.** Der er ingen fuzzy matching, ingen "find den nærmeste
-aktivitet". En exchange peger på præcis ét `(database, code)`-par — findes det ikke, er
-den *unlinked*, og databasen regner ikke.
+Three databases, three identifier formats — all sitting in the same spreadsheet column:
 
-Det gør det svært, at de tre databaser bruger **tre forskellige kodeformater**:
-
-| Database | Eksempel | Format |
+| Database | Example | Format |
 |---|---|---|
-| Din foreground | `Electricity production` | Det du selv vælger |
-| ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 tegn, **uden** bindestreger |
-| biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 tegn, **med** bindestreger |
+| Foreground | `Electricity production` | whatever you chose |
+| ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 hex characters, **no** dashes |
+| biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 characters, **with** dashes |
 
-Dertil skal databasenavnet passe helt præcist — `ecoinvent-3.11-consequential`, ikke
-`ecoinvent 3.11` eller en anden systemmodel.
+Database names must match exactly — `ecoinvent-3.11-consequential`, not `ecoinvent 3.11`
+or a different system model.
 
-Assistenten har en diagnostisk løkke, der gennemgår alle exchanges og udskriver præcis
-hvilke links der er brudt — i stedet for at du skal læse et regneark igennem i hånden.
+The worst failure here is silent: if the foreground is not actually connected, the score
+comes back zero or implausibly low with no error at all. The assistant carries a diagnostic
+loop that checks every exchange and reports precisely which links are broken.
 
-Den ved også, at du skal linke via `code` og **aldrig** via `id`: `id` er en
-matrixkoordinat, der er specifik for din installation, og peger på noget andet på en
-kollegas maskine.
+It also knows to link by `code` and never `id` — `id` is a matrix coordinate specific to
+one installation, and points somewhere else on another machine.
 
----
+### 4. Installing ecoinvent
 
-## Ecoinvent — og den fjerde forhindring: at få den installeret
+The one nobody warns you about:
 
-Selve installationen er en forhindring for sig, og det er sjældent et Python-problem.
-Derfor er der en tjekliste både i [GETTING-STARTED.md](GETTING-STARTED.md) og i assistentens opslagsfiler.
-
-Det vigtigste, som næsten ingen ved:
-
-> **Du skal logge ind på [ecoinvent.org](https://ecoinvent.org) i en browser og acceptere
-> licensaftalen og databehandlingsaftalen, før API'et overhovedet virker.**
+> **You must log in at [ecoinvent.org](https://ecoinvent.org) in a browser and accept the
+> licence and personal-data agreement before the API will authenticate at all.**
 >
-> En helt ny konto, der aldrig har været logget ind via hjemmesiden, bliver afvist fra
-> Python — og fejlbeskeden nævner ikke aftaler med ét ord. Man kan lede meget længe efter
-> en fejl i sin kode, som slet ikke er der.
+> A new account that has never logged in through the website is rejected from Python, and
+> the error says nothing about agreements.
 
-Resten af tjeklisten dækker:
-
-- **Institutionslogin er ikke det samme som en ecoinvent-konto.** Går du gennem AAU's
-  portal, har du måske slet ikke et brugernavn og kodeord at bruge.
-- **Importen tager 10–30 minutter uden fremdriftsindikator.** Cellen viser `[*]` og ser
-  død ud. Afbryder du, kan du ende med en halvt importeret database, der fejler
-  forvirrende bagefter.
-- **`version='3.11'` er tekst**, ikke et tal.
-- **Kodeord i notebooks** — hvordan du undgår det, og hvordan du gemmer det én gang for
-  alle med `permanent_setting()`.
-- **Advarslen om geocollections er harmløs.** Importen lykkedes.
-
-Assistenten kender alle disse — og tjekker licensaftalen *først*, i stedet for at lede
-efter fejl i din kode.
+Also covered: institutional SSO is often not the same as an ecoinvent account; the import
+takes 10–30 minutes with no progress bar and interrupting it leaves a half-imported
+project; `version='3.11'` is a string; keeping credentials out of notebooks with
+`permanent_setting()`; and the geocollections warning being harmless.
 
 ---
 
-## Kom i gang
+## Setup
 
-**→ [GETTING-STARTED.md](GETTING-STARTED.md)** har hele vejledningen på dansk: Python,
-AI-værktøj, notebooks og ecoinvent. Regn med 30–60 minutter første gang.
-
-Kort fortalt:
+**→ [GETTING-STARTED.md](GETTING-STARTED.md)** walks through the whole thing: environment,
+AI tool, and ecoinvent. Around 30–60 minutes the first time.
 
 ```bash
 git clone https://github.com/lotteat11/brightway25-assistant.git
@@ -235,143 +156,132 @@ conda activate bw25
 python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
 ```
 
-Åbn så **hele mappen** i VS Code (med Copilot) eller kør `claude` i den.
+Then open the folder in VS Code (with Copilot) or run `claude` in it.
 
-> **Vigtigt:** Åbn hele mappen — ikke bare en enkelt notebook. Det er sådan, værktøjet
-> finder instruktionerne.
+> **Open the whole folder**, not a single file — that is how the tool finds the
+> instructions.
 
-Notebooks hentes separat fra
-[massimopizzol/advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks).
+### Checking it works
 
-### Virker det?
+Ask: *"How do I run a Monte Carlo in Brightway 2.5?"*
 
-Spørg din AI: *"Hvordan laver jeg en Monte Carlo i Brightway 2.5?"*
-
-- Svaret nævner `use_distributions=True` → **det virker**
-- Svaret nævner `MonteCarloLCA` → instruktionerne læses ikke. Har du åbnet hele mappen?
+- Answer mentions `use_distributions=True` → working
+- Answer mentions `MonteCarloLCA` → the instructions are not being read. Is the whole
+  folder open?
 
 ---
 
-## Sådan bruger du den
+## Using it
 
-Spørg som du ville spørge en kollega, der kan Brightway:
+Ask the way you would ask a colleague who knows Brightway:
 
-- *"Hvorfor fejler den her celle?"* — indsæt hele fejlbeskeden, også det der ser
-  irrelevant ud
-- *"Skriv koden der tilføjer lognormal usikkerhed til den her exchange"*
-- *"Hvordan finder jeg dansk elproduktion i ecoinvent?"*
-- *"Lav et boxplot af mine Monte Carlo-resultater"*
-- *"Hvad betyder ST > S1 i min følsomhedsanalyse?"*
+- *"Why is this cell failing?"* — paste the whole traceback
+- *"Write the code to add lognormal uncertainty to this exchange"*
+- *"How do I find Danish medium-voltage electricity in ecoinvent?"*
+- *"My foreground imports but the score is zero"*
+- *"What does ST > S1 mean in my sensitivity analysis?"*
 
-Den skriver koden og forklarer kort, hvad der var galt. **Den holder ikke svar tilbage** —
-udgangspunktet er, at du vil videre med dit arbejde.
+It writes the code and explains briefly what was wrong. It does not withhold answers.
 
-**Vil du hellere forstå det end bare få svaret?** Sig det:
+To work something out instead of being handed it — often the case when learning a method
+you intend to use in your own research — say so:
 
-> *"Forklar det i stedet for at give mig svaret"*
+> *"Explain it instead of giving me the answer"*
 
-Så skifter den til at stille spørgsmål, give hints og vise et **beslægtet** eksempel — med
-andre tal end din egen opgave — før den til sidst giver svaret. Du kan altid afbryde med
-*"bare vis mig det"*.
+It then moves to hints and analogous examples. *"Just show me"* ends that immediately.
 
-**Om referencer:** assistenten finder ikke på kilder. Spørger du, hvor en metode kommer
-fra, siger den, at den ikke har referencen, frem for at gætte på forfatter og årstal.
-Referencelisten sættes ind senere.
+**On references:** it will not invent citations. Asked where a method comes from, it says
+it does not have the reference rather than producing a plausible author and year. A
+reference list will be added later.
 
 ---
 
-## Hvad ligger hvor
+## What is where
 
 | | |
 |---|---|
-| [`GETTING-STARTED.md`](GETTING-STARTED.md) | Opsætningsvejledning til studerende (dansk) |
-| [`environment.yml`](environment.yml) | Python-miljøet — alt der skal installeres |
-| [`skills/brightway25/`](skills/brightway25/) | Selve assistenten |
-| [`exercises/`](exercises/) | Øvelserne fra de ti notebooks, samlet ét sted |
-| [`AGENTS.md`](AGENTS.md) | Instruktionerne i den form Copilot og andre værktøjer læser |
-| [`ai-adapters/`](ai-adapters/) | Kilde til de værktøjsspecifikke filer |
+| [`GETTING-STARTED.md`](GETTING-STARTED.md) | Full setup walkthrough |
+| [`environment.yml`](environment.yml) | Conda environment |
+| [`skills/brightway25/`](skills/brightway25/) | The assistant itself |
+| [`exercises/`](exercises/) | Exercises from the Advanced LCA course notebooks |
+| [`AGENTS.md`](AGENTS.md) | Instructions in the form Copilot and others read |
+| [`ai-adapters/`](ai-adapters/) | Source for the per-tool files |
 
-### Assistentens opslagsfiler
+### Reference files
 
-`skills/brightway25/SKILL.md` styrer, hvordan den opfører sig. Resten slår den op i efter
-behov:
+`skills/brightway25/SKILL.md` governs behaviour. The rest are loaded as needed:
 
-| Fil | Indhold |
+| File | Contents |
 |---|---|
-| [`errors.md`](skills/brightway25/references/errors.md) | 25 konkrete fejlbeskeder → hvad de betyder → hvordan de rettes. Database-, beregnings-, ecoinvent- og Python-fejl |
-| [`setup.md`](skills/brightway25/references/setup.md) | Installation, kernel-problemer, projektmapper, synkroniserede mapper, **ecoinvent-tjekliste**, Windows/macOS-særheder |
-| [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | Den nuværende API: projekter, databaser, activities, exchanges, LCIA-metoder, Monte Carlo, følsomhedsanalyse — plus hvad der ændrede sig fra Brightway 2, og hvad der ændrede sig i *opførsel* frem for bare navn |
-| [`linking.md`](skills/brightway25/references/linking.md) | **Matching fra foreground til background:** hvordan linking virker, de tre kodeformater, hvordan du finder den rigtige ecoinvent-aktivitet, og en diagnostisk løkke der finder brudte links |
-| [`python-primer.md`](skills/brightway25/references/python-primer.md) | De Python-idiomer notebooks bruger: dicts, tuple-nøgler, comprehensions, generators, `zip(range(500), mc)`-mønsteret, pandas og numpy — kun det nødvendige |
-| [`course-map.md`](skills/brightway25/references/course-map.md) | Alle ti kursus-notebooks: hvad de dækker, hvad der kræves først, og hvor det er svært |
-| [`misconceptions.md`](skills/brightway25/references/misconceptions.md) | Otte typiske misforståelser — ikke kodefejl, men fejl i *forståelsen*, fx at OAT-resultater gælder globalt |
-| `SKILL.md` | Hvordan assistenten opfører sig: hjælper som standard, underviser kun på opfordring |
+| [`errors.md`](skills/brightway25/references/errors.md) | 25 error messages → cause → fix. Database, calculation, ecoinvent, environment and Python errors |
+| [`linking.md`](skills/brightway25/references/linking.md) | Foreground-to-background linking: the three code formats, finding the right ecoinvent activity, spreadsheet import columns, and a diagnostic loop for broken links |
+| [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | The current API, plus what changed from Brightway 2 — in name and in behaviour |
+| [`setup.md`](skills/brightway25/references/setup.md) | The mental model, installation, kernels, project directories, synced folders, the ecoinvent checklist |
+| [`python-primer.md`](skills/brightway25/references/python-primer.md) | The Python idioms Brightway code relies on: tuple keys, nested dicts, generators, the Monte Carlo iteration idiom |
+| [`misconceptions.md`](skills/brightway25/references/misconceptions.md) | Eight recurring misreadings of method — OAT read as global, `loc`/`scale` as mean and SD, dependent sampling as cheating |
+| [`course-map.md`](skills/brightway25/references/course-map.md) | The ten Advanced LCA course notebooks, if you are working through them |
 
 ---
 
-## Understøttede værktøjer
+## Supported tools
 
-| Værktøj | Sådan | Bemærkning |
+| Tool | How | Note |
 |---|---|---|
-| **GitHub Copilot** i VS Code | Åbn mappen | Gratis plan er nok. VS Code læser `AGENTS.md` selv |
-| **Claude Code** | `claude` i mappen | Den grundigste version — henter opslagsfiler ind efter behov |
-| **Cursor** | Åbn mappen | Læser `.cursor/rules/` |
-| **Andet** | Indsæt `AGENTS.md` i chatten | Virker også i claude.ai og ChatGPT |
+| **GitHub Copilot** in VS Code | Open the folder | Free plan is sufficient; VS Code reads `AGENTS.md` |
+| **Claude Code** | `claude` in the folder | Fullest version — loads reference files on demand |
+| **Cursor** | Open the folder | Reads `.cursor/rules/` |
+| **Anything else** | Paste `AGENTS.md` into the chat | Works in claude.ai and ChatGPT too |
 
-Claude Code-versionen er stærkest, fordi den kan hente de detaljerede opslagsfiler ind, når
-de er relevante. De øvrige får én samlet instruktionsfil — mindre grundig på
-tutor-delen, men kender stadig API-fælderne og fejlene.
+Claude Code gets the most out of it, since it can pull in detailed reference files when
+they are relevant. The others get one flattened instruction file — less depth on the
+teaching side, but the same knowledge of the API, the linking model and the errors.
 
 ---
 
-## For undervisere
+## For maintainers
 
-**Assistenten har to tilstande.** Standard er ren kodehjælp: den skriver koden, forklarer
-kort, og går videre. Tutor-tilstanden — hvor den stiller spørgsmål i stedet for at svare —
-aktiveres **kun**, når studenten beder om det ("forklar det", "hjælp mig med at forstå").
+**Two modes.** The default is straightforward coding help. Teaching mode — hints and
+questions instead of answers — activates **only** when someone asks for it. Deliberate:
+someone stuck on `ModuleNotFoundError` is not learning LCA.
 
-Det er et bevidst valg: en studerende der sidder fast i en `ModuleNotFoundError` kl. 22
-lærer ikke LCA, men brænder den tid af, som skulle gå til LCA.
+**It enforces nothing.** Anyone can open a fresh chat and ask directly. This is a working
+tool, not an assessment mechanism.
 
-**Det håndhæver ingenting.** En studerende kan åbne en ny chat og spørge direkte. Det er et
-undervisningsredskab, ikke en eksamensvagt — integritet hører hjemme i, hvordan der
-bedømmes.
+**Notebooks are not vendored.** The Advanced LCA course notebooks live in
+[massimopizzol/advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks),
+which stays the single source. The assistant does not depend on them being present — only
+`course-map.md` refers to them, and only for people following the course.
 
-**Notebooks ligger ikke her.** De hentes fra Massimos repo, som forbliver den eneste kilde.
-Ændres en notebook væsentligt, så opdater `course-map.md` tilsvarende — assistenten bruger
-den til at vide, hvad der er svært hvor, og en forældet beskrivelse gør den selvsikkert
-forkert.
-
-**Instruktionerne redigeres ét sted:** `ai-adapters/AGENTS.md`. Kør derefter
+**Editing instructions.** `ai-adapters/AGENTS.md` is the single source for the non-Claude
+tools:
 
 ```bash
 bash ai-adapters/sync-adapters.sh
 ```
 
-som kopierer dem ud til `AGENTS.md`, `.github/copilot-instructions.md` og
-`.cursor/rules/`. Commit de genererede filer — studerende skal ikke køre noget.
-`skills/brightway25/SKILL.md` vedligeholdes separat.
+regenerates `AGENTS.md`, `.github/copilot-instructions.md` and `.cursor/rules/`. Commit the
+generated files. `skills/brightway25/SKILL.md` is maintained separately, since it uses
+progressive disclosure the flat formats cannot express.
 
-**`misconceptions.md` mangler input.** Den er udledt af, hvor notebooks selv advarer eller
-gentager sig — ikke observeret i undervisningen. Hvert punkt er markeret med, hvor sikkert
-det er. At rette den er den mest værdifulde forbedring, der kan laves. Filen har en dateret
-sektion nederst til løbende noter: **de spørgsmål studerende faktisk stiller assistenten
-er den rigtige liste.**
+**`misconceptions.md` needs review.** It is inferred from where teaching material tends to
+pause and warn, not from systematic observation, and each entry carries a confidence note.
+Correcting it is the highest-value contribution available. The file has a dated section for
+ongoing notes — the questions people actually ask are the real list.
 
-**Referencer er taget ud** og sættes ind senere. Indtil da siger assistenten, at den ikke
-har kilden.
+**References were removed** and will be reinstated later. Until then the assistant says it
+does not have the source rather than guessing.
 
 ---
 
 ## Credits
 
-Kursusmateriale af **Massimo Pizzol** —
+Course material by **Massimo Pizzol** —
 [advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks),
 BSD 3-Clause.
 
-Assistent af **Lotte Ansgaard Thomsen** og **Massimo Pizzol**, Aalborg Universitet.
+Assistant by **Lotte Ansgaard Thomsen** and **Massimo Pizzol**, Aalborg University.
 
-Brightway er udviklet af
-[Chris Mutel og Brightway-fællesskabet](https://github.com/brightway-lca).
+Brightway is developed by
+[Chris Mutel and the Brightway community](https://github.com/brightway-lca).
 
-BSD 3-Clause — se [LICENSE](LICENSE).
+BSD 3-Clause — see [LICENSE](LICENSE).

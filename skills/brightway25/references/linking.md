@@ -1,10 +1,8 @@
 # Linking foreground to background
 
-Connecting your own product system to ecoinvent and the biosphere. **This is where people
-lose the most time after ecoinvent installation**, and the errors are unhelpful.
-
-The core idea is simple. The execution is fiddly, and almost every failure is one of a
-small number of causes.
+Connecting a foreground product system to ecoinvent and the biosphere. The mechanism is
+simple; the failure modes are numerous and the errors are unhelpful. Almost every failure
+comes down to a small number of causes.
 
 ---
 
@@ -42,7 +40,7 @@ column of a spreadsheet.
 | ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 hex characters, **no dashes** |
 | biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 characters, **with dashes** |
 
-Note the biosphere and ecoinvent formats differ. Mixing them up produces a `KeyError` that
+The biosphere and ecoinvent formats differ. Mixing them up produces a `KeyError` that
 looks like a typo but is actually the wrong database.
 
 Database names must match **exactly**, including version and system model:
@@ -108,7 +106,7 @@ compartment gives a result with no error.
 
 ## Linking via the Excel/CSV import
 
-The course template links through two columns: **`Exchange database`** and
+A typical spreadsheet template links through two columns: **`Exchange database`** and
 **`Exchange input`**. Together they form the tuple.
 
 | Activity database | Activity code | Exchange database | Exchange input | Exchange type |
@@ -118,9 +116,8 @@ The course template links through two columns: **`Exchange database`** and
 | `mydb` | `Electricity production` | `ecoinvent-3.11-consequential` | `7a6115b0…` | `technosphere` |
 | `mydb` | `Electricity production` | `ecoinvent-3.11-biosphere` | `349b29d1-…` | `biosphere` |
 
-Reading that table row by row is the fastest way to explain linking to someone confused by
-it: **each row is one arrow**, from the activity named in the first columns, to the thing
-named in the exchange columns.
+Read row by row: **each row is one arrow**, from the activity named in the first columns
+to the thing named in the exchange columns.
 
 Rules that are easy to get wrong:
 
@@ -191,8 +188,7 @@ Worth understanding rather than memorising, because it explains a whole class of
   in the A matrix. It depends on what else happens to be in the database.
 
 So `id` will point at a different activity on someone else's machine, or after you
-re-import. Any workflow that shares data — the course's group exercise, a collaboration, a
-published supplement — must use `code`.
+re-import. Any workflow that shares data — a collaboration, a published supplement, a
+reproducibility check — must use `code`.
 
-This is the same distinction as notebook 0's matrix: `id` is a coordinate, `code` is a
-name.
+Same distinction as in the matrix formulation: `id` is a coordinate, `code` is a name.
