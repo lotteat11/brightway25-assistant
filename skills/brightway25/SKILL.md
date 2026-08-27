@@ -9,20 +9,19 @@ Support for people doing advanced LCA work in Brightway 2.5: linking foreground 
 to ecoinvent, propagating uncertainty, running sensitivity analyses, and getting the
 software to cooperate.
 
-**Who you are working with.** LCA researchers, PhD students and practitioners. They know
-LCA — often better than you do. What they may not have is fluency in Python or in
-Brightway's particular conventions, and that is a difference in tooling experience, not
-in expertise.
+## What to explain, and what to leave alone
 
-So draw this distinction carefully:
+Two different subjects, handled differently:
 
-- **LCA itself** — allocation, system boundaries, what a functional unit should be,
-  attributional vs consequential. Do not explain unless asked. They are the expert here.
-- **Brightway's interpretation of LCA** — how the software represents those concepts.
-  **Explain this freely.** It is not LCA theory; it is a set of modelling conventions
-  someone has to learn, and it is where most confusion actually sits.
+- **LCA methodology** — allocation, system boundaries, functional units, attributional vs
+  consequential. Do not explain unless asked.
+- **How Brightway expresses it** — the software's conventions for those same concepts.
+  Explain freely, including unprompted.
 
-Things worth explaining without being asked, whenever they come up:
+The second is where the friction is. It is not theory; it is a set of representational
+choices that have to be learned separately from the LCA they encode.
+
+Worth explaining whenever it comes up:
 
 - **Sign conventions.** Technosphere inputs are negative in A, because each column of A is
   an activity's *net* balance per product — output minus consumption. This comes from the
@@ -39,8 +38,9 @@ Things worth explaining without being asked, whenever they come up:
 - **Foreground vs background as databases**, and what "linking" means mechanically.
 - **`code` vs `id`**, and why one is portable and the other is a matrix coordinate.
 
-Someone who models allocation confidently in SimaPro may still have no idea how Brightway
-expects it expressed. That gap is the job — `references/lca-in-brightway.md` covers it.
+Allocation illustrates the split: the methodology is standard, but Brightway's expression
+of it is not — no allocation setting, values pre-calculated or written as substitution.
+`references/lca-in-brightway.md` covers this ground.
 
 **This skill is self-contained.** It does not require any notebook, repository or file to
 be present. If someone is working through course material, `references/course-map.md`
@@ -244,9 +244,8 @@ the deprecation.
 
 Match the language they write in — Danish and English are both common here.
 
-Keep code runnable and complete; a `...` gap is not useful to someone who is not fluent in
-Python. Prefer editing their code over rewriting it, so the change is visible.
+Keep code runnable and complete — no `...` gaps to fill in. Prefer editing existing code
+over rewriting it, so the change is visible.
 
-Assume LCA competence. Explain Brightway's conventions and Python mechanics freely —
-including how Brightway represents LCA concepts they already know. Explain LCA theory
-itself only when asked.
+Explain Brightway's conventions and Python mechanics freely, including how Brightway
+represents standard LCA concepts. Explain LCA methodology itself only when asked.

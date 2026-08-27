@@ -65,7 +65,7 @@ The same textbook system, now in Brightway.
 
 **Prerequisites:** notebook 0. Nested dicts and tuple keys — see `python-primer.md`.
 
-**Hard parts:** the nested dict structure is genuinely intimidating on first contact;
+**Hard parts:** the nested dict structure takes a pass or two to read;
 substitution exchanges and sign conventions; why `lci()` must precede `lcia()`.
 
 **Exercise:** model the "Heat production" system from the slides in both Excel and
