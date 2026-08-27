@@ -78,22 +78,52 @@ Do not attempt 4–6 before 3 has finished successfully.
 
 ---
 
-## The standard install
+## Installing
 
-From the repository root:
+Either environment manager works — **conda if there is no reason to prefer otherwise**,
+since it handles the scientific stack with fewer surprises. What matters is that Brightway,
+the notebook kernel and any later install all target the **same** environment; most setup
+problems are a mismatch between those.
+
+**conda:**
 
 ```bash
-conda env create -f environment.yml
+conda create -n bw25 -c conda-forge python=3.11 brightway25 ecoinvent_interface jupyterlab ipykernel
 conda activate bw25
 python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
-jupyter lab
+```
+
+**venv and pip:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install brightway25 ecoinvent_interface jupyterlab ipykernel
+python -m ipykernel install --user --name bw25 --display-name "Python (bw25)"
 ```
 
 Then **select the "Python (bw25)" kernel inside the notebook** — Kernel → Change Kernel.
 Creating the environment does not select it. This step is skipped constantly and causes
 most of the problems below.
 
-`mamba env create -f environment.yml` is a faster drop-in if available.
+If a repository with an `environment.yml` or a setup script is at hand, use that instead —
+it does the same thing with the versions already pinned.
+
+### Installing a package once you have already started
+
+A frequent stumble, because a notebook holds the environment open:
+
+1. **Close the notebook** and stop the Jupyter server (Ctrl-C in its terminal)
+2. In a terminal, **activate the environment**: `conda activate bw25`
+3. Install: `conda install -c conda-forge <package>` — or `pip install <package>` if the
+   environment was built with venv
+4. **Reopen** the notebook and restart the kernel
+
+Do not use `!conda install` or `!pip install` from inside a cell. The intuition is
+reasonable — install from Jupyter, install for Jupyter — but it does not hold: `!` runs in
+the shell Jupyter was *launched* from, which is often a different Python than the kernel is
+running. The package lands somewhere the notebook cannot see, which is the exact cause of
+the `ModuleNotFoundError` below.
 
 ---
 
@@ -194,11 +224,17 @@ Credentials are the ones for ecoinvent.org itself. Common complications:
 - Have them verify by logging in on the website. If that fails, no amount of Python will
   help.
 
-### Step 2 — install the package
+### Step 2 — check `ecoinvent_interface` is installed
+
+The install commands above include it. If it is missing:
 
 ```bash
-conda install -c conda-forge ecoinvent_interface
+conda activate bw25
+conda install -c conda-forge ecoinvent_interface     # or: pip install ecoinvent_interface
 ```
+
+From a terminal with the notebook closed — see *Installing a package once you have already
+started* above.
 
 Note `ecoinvent_interface` is described by its authors as unofficial and unsupported, and
 it talks to an API that changes. Version drift is a real cause of sudden breakage — if
