@@ -168,6 +168,17 @@ else
     "\n",
     "**Before running:** Kernel → Change Kernel → Python (bw25)"
   ]},
+  {"cell_type": "markdown", "id": "c1b", "metadata": {}, "source": [
+    "### Two warnings you can ignore\n",
+    "\n",
+    "You will probably see these below. Neither is an error \u2014 red text in Jupyter is not\n",
+    "always a failure.\n",
+    "\n",
+    "- **scikit-umfpack warning** \u2014 calculations are slightly slower without it on Apple\n",
+    "  Silicon. Nothing is broken.\n",
+    "- **Not able to determine geocollections** \u2014 refers to regionalised LCA, which you are\n",
+    "  not doing."
+  ]},
   {"cell_type": "code", "execution_count": null, "id": "c2", "metadata": {}, "outputs": [], "source": [
     "import sys\n",
     "print(sys.executable)   # should contain .venv"

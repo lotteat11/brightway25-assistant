@@ -13,8 +13,20 @@ looked for an activity with that code and there isn't one".
 
 ## Brightway: database and activity errors
 
+### `UnknownObject` — often with a completely empty message
+**This is the one people cannot search for.** Brightway 2.5 raises `UnknownObject` (not
+`KeyError`) when `get_activity()` is given a key that does not exist, and the message is
+frequently blank — just the exception name and a colon. Nothing to google.
+
+**Means:** exactly the same as the `KeyError` below — that `(database, code)` pair is not
+there. Treat the two identically and work through the checks in the next two entries.
+
+If someone reports a blank or baffling error right after looking up an activity, this is
+almost certainly it.
+
 ### `KeyError: ('some_db', 'some_activity')`
-**Means:** no activity with that code exists in that database.
+**Means:** no activity with that code exists in that database. Depending on the call, the
+same problem may surface as `UnknownObject` — see above.
 **Usual causes:** typo; wrong database name; the database was never written; you are in
 the wrong project.
 **Fix:**
@@ -24,13 +36,15 @@ print(list(bd.databases))    # database there?
 print([a['code'] for a in bd.Database('some_db')][:20])   # what codes exist?
 ```
 
-### `KeyError` on an ecoinvent or biosphere code
+### `KeyError` (or `UnknownObject`) on an ecoinvent or biosphere code
 **Means:** the exchange points at something that is not there — an unlinked exchange.
 **Check, in order:**
 1. Does the database name match exactly? `print(list(bd.databases))` — `ecoinvent-3.11-consequential`, not `ecoinvent 3.11` or a different system model
-2. Is the code in the right format? ecoinvent codes are 32 hex characters with **no
-   dashes**; biosphere codes are 36 characters **with dashes**. Using one where the other
-   belongs is common
+2. Is the code in the right format? ecoinvent codes are 32 characters using only digits
+   and the letters a–f, with **no dashes**
+   (`7a6115b0457d395cd2ffb09edb920931`); biosphere codes are 36 characters **with dashes**
+   (`349b29d1-3e58-4c66-98b9-9d1a076efd2e`). Using one where the other belongs is common.
+   A code that is much shorter than either is truncated
 3. Does the code actually exist? `bd.get_activity((dbname, code))`
 
 **Do not read the spreadsheet by hand.** `linking.md` has a loop that checks every

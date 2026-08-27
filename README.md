@@ -137,8 +137,15 @@ reference list will be added later.
 | [`exercises/`](exercises/) | Exercises from the Advanced LCA course notebooks |
 | [`AGENTS.md`](AGENTS.md) | Instructions in the form Copilot and others read |
 | [`ai-adapters/`](ai-adapters/) | Source for the per-tool files |
+| [`templates/`](templates/) | A working Excel workbook for `bi.ExcelImporter`, in the layout it requires |
 
 ### Reference files
+
+> **These are written for the assistant, not for you.** They are instructions telling an AI
+> how to behave and what to watch out for, so they talk about "the user" in the third
+> person and occasionally read like a briefing. You are welcome to read them — the content
+> is accurate — but expect to see yourself discussed rather than addressed. For
+> human-facing instructions, use [GETTING-STARTED.md](GETTING-STARTED.md).
 
 `skills/brightway25/SKILL.md` governs behaviour. The rest are loaded as needed:
 

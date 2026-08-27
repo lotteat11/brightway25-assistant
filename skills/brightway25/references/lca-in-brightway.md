@@ -42,27 +42,53 @@ lca.characterized_inventory    # after lcia()
 
 ## Sign conventions
 
-**This is a Brightway convention, not an LCA principle**, and it is worth saying so — it
-prevents people looking for a methodological reason that does not exist.
+### Why inputs are negative — the explanation to give
 
-| Exchange | Sign | Why |
+"Technosphere inputs are negative" is not an arbitrary software quirk. It follows from the
+standard matrix formulation of LCI (Heijungs & Suh 2002), and it makes sense in two
+sentences:
+
+> **Each column of A is one activity, and each row is one product. A column records that
+> activity's *net* effect on each product: what it puts out, minus what it takes in.**
+> Output is positive; consumption is negative.
+>
+> `A⁻¹f` then asks: *what scaling of each activity makes the net output of the whole system
+> equal my demand?* Producing 10 kWh while consuming 2 kg of fuel is `+10` in the
+> electricity row and `−2` in the fuel row of the same column.
+
+Someone who has that picture will get the signs right permanently. Someone told only "put a
+minus sign here" will get them wrong under pressure. Give the explanation; it is short.
+
+| Exchange | Sign | Reason |
 |---|---|---|
-| `production` | positive | output of the activity, the diagonal of A |
-| `technosphere` input | **negative** | consumed by the activity |
+| `production` | positive | the activity's own output — the diagonal of A |
+| `technosphere` input | **negative** | consumed, so it reduces the net balance for that product |
 | `biosphere` emission | positive | released to the environment |
 | `biosphere` resource use | negative | taken from the environment |
-| `substitution` | see below | avoided production |
+| `substitution` | see below | avoided production elsewhere |
 
 Symptoms of getting it wrong: results with the wrong sign, or roughly double the expected
 magnitude.
 
-When in doubt, read the sign directly off A. The algebra is unambiguous where the API is
-not:
+### Reading the matrix directly
+
+If someone wants to see it, print A **with labels** — the bare matrix is a grid of numbers
+with no indication of which row or column is which, which helps nobody:
 
 ```python
-import numpy as np
-print(lca.technosphere_matrix.toarray())
+import pandas as pd
+
+A = lca.technosphere_matrix.toarray()          # .toarray() turns the sparse
+                                               # (memory-efficient) form into a plain grid
+names = {v: bd.get_activity(k)['name']
+         for k, v in lca.dicts.activity.items()}
+labels = [names[i] for i in range(A.shape[0])]
+
+print(pd.DataFrame(A, index=labels, columns=labels).round(3))
 ```
+
+Rows and columns are in the same order, so reading down a column shows one activity's net
+balance across every product — which is the picture described above.
 
 ---
 
@@ -225,7 +251,9 @@ fuel_exc.save()
 ### "I want 20% uncertainty" — ask what they mean
 
 This request is ambiguous, and the ambiguity matters. `scale = np.log(1.2)` sets a
-**geometric standard deviation** of 1.2, whose 95% interval is roughly **−30% to +43%** —
+**geometric standard deviation** of 1.2 — a *multiplicative* spread, meaning "typically
+within a factor of 1.2 either way" rather than "plus or minus 1.2 units". It is the natural
+measure for lognormal data, which is why Brightway uses it. A GSD of 1.2 whose 95% interval is roughly **−30% to +43%** —
 a factor of 2 from end to end, not ±20%. Someone who says "20%" usually means one of:
 
 | They mean | Encode as |

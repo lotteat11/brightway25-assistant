@@ -106,7 +106,7 @@ compartment gives a result with no error.
 
 ## Linking via the course spreadsheet template
 
-> **This layout belongs to the course's `lci_to_bw2()` helper.** Brightway's own
+> **Which Excel route?** This layout belongs to the course's `lci_to_bw2()` helper. Brightway's own
 > `bi.ExcelImporter` uses a different, block-structured workbook and cannot read this
 > format — see `official-bw25.md` if the person is not following the course.
 

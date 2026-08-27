@@ -175,6 +175,34 @@ licence does not block the uncertainty and sensitivity material.
 
 ---
 
+## Importing your own inventory
+
+When you are ready to model your own system from a spreadsheet, start from the working
+example in [`templates/excel_import_template.xlsx`](templates/excel_import_template.xlsx).
+
+`bi.ExcelImporter` needs a specific layout — block keywords (`Database`, `Activity`,
+`Exchanges`) in the first column, a blank row between activities, and the row after
+`Exchanges` giving the column headers. The template is that layout, already correct; edit
+the values rather than building a sheet from scratch.
+
+```python
+import bw2io as bi
+fg = bi.ExcelImporter("my_inventory.xlsx")
+fg.apply_strategies()
+fg.match_database(fields=["name", "unit", "location", "reference product"])
+fg.statistics()
+list(fg.unlinked)        # must be empty
+fg.write_database()      # only once it is
+```
+
+**Do not call `write_database()` while anything is unlinked** — those exchanges are dropped
+silently and your results come out too low, with no error.
+
+Ask the assistant if the import misbehaves; unlinked exchanges are one of the things it
+knows well.
+
+---
+
 ## 4. ecoinvent
 
 Take these in order — each step rules out a whole class of failure.

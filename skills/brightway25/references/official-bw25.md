@@ -3,6 +3,9 @@
 The standard, non-course way of doing things — drawn from the official tutorial at
 <https://learn.brightway.dev/en/latest/content/chapters/BW25/BW25_introduction.html>.
 
+> **Which Excel route?** Following the Advanced LCA course → the flat template in
+> `linking.md`. Anyone else → `bi.ExcelImporter`, below. The two formats are incompatible.
+
 Reach for this when someone is **not** following the Advanced LCA course: importing a
 spreadsheet with `bw2io`'s own importer, running many activities against many methods, or
 doing contribution analysis. The course notebooks use a custom helper (`lci_to_bw2.py`)
@@ -68,9 +71,42 @@ input` layout described in `linking.md` — that one belongs to the course's `lc
 helper and `ExcelImporter` cannot read it. Pointing `ExcelImporter` at a course-style sheet
 produces an empty or malformed import.
 
-If someone needs a starting template, the reliable route is
-`bi.create_default_excel_template()` if available in their version, or the example workbook
-from the official tutorial — rather than describing the layout from memory.
+**There is no template generator** — `bi.create_default_excel_template()` does not exist.
+Build the sheet by hand. This layout is verified working (0 unlinked, writes successfully):
+
+| A | B | C | D | E | F |
+|---|---|---|---|---|---|
+| `Database` | test-fg | | | | |
+| *(blank row)* | | | | | |
+| `Activity` | Electricity production | | | | |
+| `code` | el01 | | | | |
+| `unit` | kilowatt hour | | | | |
+| `location` | DK | | | | |
+| `reference product` | electricity | | | | |
+| `production amount` | 10 | | | | |
+| `Exchanges` | | | | | |
+| `name` | `amount` | `unit` | `type` | `location` | `reference product` |
+| Electricity production | 10 | kilowatt hour | production | DK | electricity |
+| Fuel production | 2 | kilogram | technosphere | DK | fuel |
+| *(blank row)* | | | | | |
+| `Activity` | Fuel production | | | | |
+| … | | | | | |
+
+Rules that matter:
+
+- **Block keywords go in column A**: `Database`, `Activity`, `Exchanges`. Everything else
+  is a key in column A with its value in column B.
+- **The row directly after `Exchanges` is the column headers** for that activity's
+  exchanges. Subsequent rows are the exchanges themselves.
+- **A blank row separates activities.**
+- **Exchange rows must carry every field you later match on.** If you call
+  `match_database(fields=[..., "location", "reference product"])` but the exchange rows have
+  only name/amount/unit/type, *nothing links* — verified: it silently leaves them unlinked.
+  Either add those columns to the exchange rows or drop the fields from the match.
+- Each activity needs its own production exchange, pointing at itself by name.
+
+A ready-to-edit version of exactly this sheet is in the repo:
+`templates/excel_import_template.xlsx`.
 
 ### The order matters
 

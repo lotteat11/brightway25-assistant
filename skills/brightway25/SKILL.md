@@ -24,8 +24,11 @@ So draw this distinction carefully:
 
 Things worth explaining without being asked, whenever they come up:
 
-- **Sign conventions.** Technosphere inputs are negative in A. Substitution exchanges add
-  a further sign flip. This is a Brightway convention, not an LCA principle.
+- **Sign conventions.** Technosphere inputs are negative in A, because each column of A is
+  an activity's *net* balance per product — output minus consumption. This comes from the
+  standard matrix formulation, not from Brightway. Give that one-sentence reason rather
+  than just the rule; `lca-in-brightway.md` has the fuller version. Substitution adds a
+  further sign flip.
 - **Exchange types.** What `production`, `technosphere`, `biosphere` and `substitution`
   mean *to Brightway*, and why every activity needs exactly one production exchange.
 - **The A/B matrix layout.** Which is technosphere, which is biosphere, what rows and
