@@ -26,6 +26,9 @@ Worth stating explicitly; it is the reason the whole approach exists.
 
 ## The notebook, cell by cell
 
+> The method key below is this course project's. For any other project, look one up:
+> `[m for m in bd.methods if 'IPCC' in str(m)][:5]`.
+
 ### Comparative Monte Carlo
 
 This script shows how to perform a more advanced comparative Monte Carlo simulation.

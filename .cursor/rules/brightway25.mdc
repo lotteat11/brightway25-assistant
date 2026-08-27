@@ -122,6 +122,19 @@ custom `lci_to_bw2.py` helper is not a published package:
 BW25 is officially still in beta — if the installed version disagrees with any of this,
 believe the installed version.
 
+## Never write a method key from memory
+
+LCIA method keys are release-dependent tuples. Look one up instead of recalling one:
+
+```python
+[m for m in bd.methods if 'IPCC' in str(m)][:5]
+```
+
+ecoinvent 3.11 uses a 4-tuple — `('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil',
+'global warming potential (GWP100)')` — not the plausible-looking 3-tuple
+`('IPCC 2021', 'climate change', 'GWP 100a')`. In example code write `method_key = ...`
+with the lookup above it; a filled-in placeholder will get pasted.
+
 ## Two traps worth holding in mind
 
 **Your own training data is the hazard.** It is saturated with Brightway 2 idioms:

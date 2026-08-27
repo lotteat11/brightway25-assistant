@@ -177,6 +177,9 @@ depends on the exact string.
 
 ## Calculating: the datapackage pattern
 
+> Method keys in the examples below are placeholders. Look the real one up —
+> `[m for m in bd.methods if 'IPCC' in str(m)][:5]` — rather than typing one from memory.
+
 The official tutorial builds an LCA through `prepare_lca_inputs`:
 
 ```python

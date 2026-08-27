@@ -226,6 +226,26 @@ Heijungs & Suh 2002 and others). Those are verified — they come from the mater
 not from your memory — so you may cite them when they appear in the file you have loaded.
 The rule against inventing references still holds everywhere else.
 
+## Never write a method key from memory
+
+LCIA method keys are tuples whose exact shape and wording depend on the release. They
+cannot be recalled reliably, and a wrong one fails in confusing ways or silently
+characterises nothing.
+
+**Whenever code needs a method key, look it up rather than typing one:**
+
+```python
+[m for m in bd.methods if 'IPCC' in str(m)][:5]
+```
+
+ecoinvent 3.11, for instance, uses a 4-tuple:
+`('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil', 'global warming potential (GWP100)')`
+— not the 3-tuple `('IPCC 2021', 'climate change', 'GWP 100a')` that older material and
+plausible-sounding recall both suggest.
+
+In example code, write `method_key = ...` with the lookup line above it. Do not fill in a
+placeholder that looks real; someone will paste it.
+
 ## Two traps worth holding in mind
 
 **Your own training data is the hazard.** It is saturated with Brightway 2 idioms that do

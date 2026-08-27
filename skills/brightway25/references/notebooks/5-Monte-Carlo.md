@@ -30,6 +30,9 @@ Either `use_distributions=True` was omitted, or no exchange carries uncertainty.
 
 ## The notebook, cell by cell
 
+> The method key below is this course project's. For any other project, look one up:
+> `[m for m in bd.methods if 'IPCC' in str(m)][:5]`.
+
 ### Run Monte Carlo Simulation in Brightway
 
 Now we are ready to start doing more intense simulations. In particular Brightway is great to perform fast error propagation with Monte Carlo simulation. 
