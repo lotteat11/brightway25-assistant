@@ -64,84 +64,6 @@ written, and it is where a lot of the friction actually sits.
 
 ---
 
-## The four things that cost the most time
-
-### 1. Getting oriented in Brightway
-
-Not syntax — structure. A *project* is a sealed workspace containing a foreground database,
-ecoinvent as background, and a biosphere database of elementary flows. Databases hold
-*activities*; activities hold *exchanges*, and an exchange is one arrow: "this activity
-consumes 2 kg of that".
-
-```python
-bd.projects.set_current('my_project')
-act = bd.Database('my_foreground').get('my_activity')
-lca = bc.LCA({act: 1}, method)
-lca.lci()                                  # solve inventory:  s = A⁻¹f,  g = Bs
-lca.lcia()                                 # characterise:     score = CF · g
-print(lca.score)
-```
-
-`lci()` and `lcia()` are separate because they answer different questions — what is
-emitted, then how much it matters. That is why `.score` fails if you skip them.
-
-### 2. Brightway 2 versus 2.5
-
-Most old code translates mechanically. Some of it changed *behaviourally*, which is where a
-find-and-replace leaves you with something broken:
-
-| Brightway 2 | Brightway 2.5 |
-|---|---|
-| `import brightway2 as bw` | `import bw2data as bd`, `bw2calc as bc`, `bw2io as bi` |
-| `MonteCarloLCA(fu, method)` | `bc.LCA(fu, method, use_distributions=True)`, then iterate |
-| `bw2setup()` | Not needed — the ecoinvent import brings biosphere with it |
-| ecoinvent from a folder of files | `ecoinvent_interface` with licence credentials |
-
-Brightway 2 projects on disk are not directly usable in 2.5 either.
-
-The assistant flags old-API code explicitly — the source is outdated, not you.
-
-### 3. Linking foreground to background
-
-**Brightway does no fuzzy matching.** An exchange points at exactly one `(database, code)`
-tuple. If nothing is there, the exchange is unlinked and the database will not calculate.
-There is no way to write "electricity, DK" and have Brightway work out what you meant.
-
-Three databases, three identifier formats — all sitting in the same spreadsheet column:
-
-| Database | Example | Format |
-|---|---|---|
-| Foreground | `Electricity production` | whatever you chose |
-| ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 hex characters, **no** dashes |
-| biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 characters, **with** dashes |
-
-Database names must match exactly — `ecoinvent-3.11-consequential`, not `ecoinvent 3.11`
-or a different system model.
-
-The worst failure here is silent: if the foreground is not actually connected, the score
-comes back zero or implausibly low with no error at all. The assistant carries a diagnostic
-loop that checks every exchange and reports precisely which links are broken.
-
-It also knows to link by `code` and never `id` — `id` is a matrix coordinate specific to
-one installation, and points somewhere else on another machine.
-
-### 4. Installing ecoinvent
-
-The one nobody warns you about:
-
-> **You must log in at [ecoinvent.org](https://ecoinvent.org) in a browser and accept the
-> licence and personal-data agreement before the API will authenticate at all.**
->
-> A new account that has never logged in through the website is rejected from Python, and
-> the error says nothing about agreements.
-
-Also covered: institutional SSO is often not the same as an ecoinvent account; the import
-takes 10–30 minutes with no progress bar and interrupting it leaves a half-imported
-project; `version='3.11'` is a string; keeping credentials out of notebooks with
-`permanent_setting()`; and the geocollections warning being harmless.
-
----
-
 ## Setup
 
 **→ [GETTING-STARTED.md](GETTING-STARTED.md)** walks through the whole thing: environment,
@@ -271,6 +193,82 @@ ongoing notes — the questions people actually ask are the real list.
 
 **References were removed** and will be reinstated later. Until then the assistant says it
 does not have the source rather than guessing.
+
+## The four things that cost the most time
+
+### 1. Getting oriented in Brightway
+
+Not syntax — structure. A *project* is a sealed workspace containing a foreground database,
+ecoinvent as background, and a biosphere database of elementary flows. Databases hold
+*activities*; activities hold *exchanges*, and an exchange is one arrow: "this activity
+consumes 2 kg of that".
+
+```python
+bd.projects.set_current('my_project')
+act = bd.Database('my_foreground').get('my_activity')
+lca = bc.LCA({act: 1}, method)
+lca.lci()                                  # solve inventory:  s = A⁻¹f,  g = Bs
+lca.lcia()                                 # characterise:     score = CF · g
+print(lca.score)
+```
+
+`lci()` and `lcia()` are separate because they answer different questions — what is
+emitted, then how much it matters. That is why `.score` fails if you skip them.
+
+### 2. Brightway 2 versus 2.5
+
+Most old code translates mechanically. Some of it changed *behaviourally*, which is where a
+find-and-replace leaves you with something broken:
+
+| Brightway 2 | Brightway 2.5 |
+|---|---|
+| `import brightway2 as bw` | `import bw2data as bd`, `bw2calc as bc`, `bw2io as bi` |
+| `MonteCarloLCA(fu, method)` | `bc.LCA(fu, method, use_distributions=True)`, then iterate |
+| `bw2setup()` | Not needed — the ecoinvent import brings biosphere with it |
+| ecoinvent from a folder of files | `ecoinvent_interface` with licence credentials |
+
+Brightway 2 projects on disk are not directly usable in 2.5 either.
+
+The assistant flags old-API code explicitly — the source is outdated, not you.
+
+### 3. Linking foreground to background
+
+**Brightway does no fuzzy matching.** An exchange points at exactly one `(database, code)`
+tuple. If nothing is there, the exchange is unlinked and the database will not calculate.
+There is no way to write "electricity, DK" and have Brightway work out what you meant.
+
+Three databases, three identifier formats — all sitting in the same spreadsheet column:
+
+| Database | Example | Format |
+|---|---|---|
+| Foreground | `Electricity production` | whatever you chose |
+| ecoinvent | `7a6115b0457d395cd2ffb09edb920931` | 32 hex characters, **no** dashes |
+| biosphere | `349b29d1-3e58-4c66-98b9-9d1a076efd2e` | 36 characters, **with** dashes |
+
+Database names must match exactly — `ecoinvent-3.11-consequential`, not `ecoinvent 3.11`
+or a different system model.
+
+The worst failure here is silent: if the foreground is not actually connected, the score
+comes back zero or implausibly low with no error at all. The assistant carries a diagnostic
+loop that checks every exchange and reports precisely which links are broken.
+
+It also knows to link by `code` and never `id` — `id` is a matrix coordinate specific to
+one installation, and points somewhere else on another machine.
+
+### 4. Installing ecoinvent
+
+The one nobody warns you about:
+
+> **You must log in at [ecoinvent.org](https://ecoinvent.org) in a browser and accept the
+> licence and personal-data agreement before the API will authenticate at all.**
+>
+> A new account that has never logged in through the website is rejected from Python, and
+> the error says nothing about agreements.
+
+Also covered: institutional SSO is often not the same as an ecoinvent account; the import
+takes 10–30 minutes with no progress bar and interrupting it leaves a half-imported
+project; `version='3.11'` is a string; keeping credentials out of notebooks with
+`permanent_setting()`; and the geocollections warning being harmless.
 
 ---
 
