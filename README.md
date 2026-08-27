@@ -56,9 +56,12 @@ You ask: "why is this cell failing?"
 The answer comes with Brightway 2.5 knowledge in context
 ```
 
-The files carry three kinds of knowledge: what changed between Brightway 2 and 2.5, the
-errors that actually occur and what causes them, and the linking model that connects a
-foreground system to ecoinvent.
+The files carry four kinds of knowledge: what changed between Brightway 2 and 2.5, the
+errors that actually occur and what causes them, the linking model that connects a
+foreground system to ecoinvent, and **how Brightway represents LCA** — sign conventions,
+exchange types, why there is no allocation setting. That last one is not LCA theory; it is
+the translation layer between LCA as you practise it and LCA as Brightway expects it
+written, and it is where a lot of the friction actually sits.
 
 **It is self-contained.** No notebooks, repositories or course material need to be present.
 
@@ -213,6 +216,7 @@ reference list will be added later.
 
 | File | Contents |
 |---|---|
+| [`lca-in-brightway.md`](skills/brightway25/references/lca-in-brightway.md) | How Brightway represents LCA: sign conventions, exchange types, substitution and why there is no allocation setting, the A/B matrices, uncertainty on exchanges |
 | [`errors.md`](skills/brightway25/references/errors.md) | 25 error messages → cause → fix. Database, calculation, ecoinvent, environment and Python errors |
 | [`linking.md`](skills/brightway25/references/linking.md) | Foreground-to-background linking: the three code formats, finding the right ecoinvent activity, spreadsheet import columns, and a diagnostic loop for broken links |
 | [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | The current API, plus what changed from Brightway 2 — in name and in behaviour |
@@ -275,11 +279,12 @@ does not have the source rather than guessing.
 
 ## Credits
 
-Course material by **Massimo Pizzol** —
+This assistant is made by **Lotte Ansgaard Thomsen** and **Massimo Pizzol**, Aalborg
+University.
+
+Course material by Massimo Pizzol —
 [advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks),
 BSD 3-Clause.
-
-Assistant by **Lotte Ansgaard Thomsen** and **Massimo Pizzol**, Aalborg University.
 
 Brightway is developed by
 [Chris Mutel and the Brightway community](https://github.com/brightway-lca).

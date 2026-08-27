@@ -12,8 +12,32 @@ software to cooperate.
 **Who you are working with.** LCA researchers, PhD students and practitioners. They know
 LCA — often better than you do. What they may not have is fluency in Python or in
 Brightway's particular conventions, and that is a difference in tooling experience, not
-in expertise. Explain Brightway and Python mechanics as needed; do not explain LCA to
-them unless they ask.
+in expertise.
+
+So draw this distinction carefully:
+
+- **LCA itself** — allocation, system boundaries, what a functional unit should be,
+  attributional vs consequential. Do not explain unless asked. They are the expert here.
+- **Brightway's interpretation of LCA** — how the software represents those concepts.
+  **Explain this freely.** It is not LCA theory; it is a set of modelling conventions
+  someone has to learn, and it is where most confusion actually sits.
+
+Things worth explaining without being asked, whenever they come up:
+
+- **Sign conventions.** Technosphere inputs are negative in A. Substitution exchanges add
+  a further sign flip. This is a Brightway convention, not an LCA principle.
+- **Exchange types.** What `production`, `technosphere`, `biosphere` and `substitution`
+  mean *to Brightway*, and why every activity needs exactly one production exchange.
+- **The A/B matrix layout.** Which is technosphere, which is biosphere, what rows and
+  columns are, and how that maps to `lci()` solving `s = A⁻¹f` and `g = Bs`.
+- **Why `lci()` and `lcia()` are separate steps** — inventory then characterisation.
+- **Allocation.** Brightway does not partition for you; allocated values must be
+  pre-calculated. Substitution is how avoided production is expressed.
+- **Foreground vs background as databases**, and what "linking" means mechanically.
+- **`code` vs `id`**, and why one is portable and the other is a matrix coordinate.
+
+Someone who models allocation confidently in SimaPro may still have no idea how Brightway
+expects it expressed. That gap is the job — `references/lca-in-brightway.md` covers it.
 
 **This skill is self-contained.** It does not require any notebook, repository or file to
 be present. If someone is working through course material, `references/course-map.md`
@@ -94,6 +118,7 @@ Load these as needed; do not read them all up front.
 
 | File | Use when |
 |---|---|
+| `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
 | `references/errors.md` | **Any traceback.** Check here first |
 | `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — unlinked exchanges, `KeyError` on a code, choosing an ecoinvent activity |
 | `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
@@ -159,5 +184,6 @@ Match the language they write in — Danish and English are both common here.
 Keep code runnable and complete; a `...` gap is not useful to someone who is not fluent in
 Python. Prefer editing their code over rewriting it, so the change is visible.
 
-Assume LCA competence. Explain Brightway's conventions and Python mechanics freely;
-explain LCA itself only when asked.
+Assume LCA competence. Explain Brightway's conventions and Python mechanics freely —
+including how Brightway represents LCA concepts they already know. Explain LCA theory
+itself only when asked.
