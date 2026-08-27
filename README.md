@@ -130,6 +130,7 @@ reference list will be added later.
 | | |
 |---|---|
 | [`setup.sh`](setup.sh) | One-command setup: environment, kernel, project folder |
+| [`get-course-notebooks.sh`](get-course-notebooks.sh) | Downloads the Advanced LCA course notebooks and points them at the bw25 kernel |
 | [`GETTING-STARTED.md`](GETTING-STARTED.md) | Full setup walkthrough |
 | [`environment.yml`](environment.yml) | Conda alternative to `setup.sh` |
 | [`skills/brightway25/`](skills/brightway25/) | The assistant itself |
@@ -182,6 +183,14 @@ tool, not an assessment mechanism.
 [massimopizzol/advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks),
 which stays the single source. The assistant does not depend on them being present — only
 `course-map.md` refers to them, and only for people following the course.
+
+**Teaching with the notebooks.** `bash get-course-notebooks.sh` fetches them into
+`Course-material-bw25/` and rewrites each notebook's kernelspec to `bw25`. Upstream they
+specify a generic `python3` kernel, so without that rewrite every student hits
+`ModuleNotFoundError` on the first cell until they change the kernel by hand. The folder
+must stay intact: notebooks 4, 7 and 8 import `lci_to_bw2.py` and read CSVs relative to
+their own directory. Re-running the script pulls upstream changes and asks before replacing
+local edits.
 
 **Editing instructions.** `ai-adapters/AGENTS.md` is the single source for the non-Claude
 tools:

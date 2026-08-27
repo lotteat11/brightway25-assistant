@@ -22,6 +22,10 @@ credentials.json
 # Your own work — created by setup.sh, not part of the repo
 my-project/
 
+# Course notebooks — fetched by get-course-notebooks.sh from Massimo's repo,
+# which stays the single source
+Course-material-bw25/
+
 # Solutions, if kept locally
 exercises/solutions/
 

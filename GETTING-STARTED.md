@@ -139,24 +139,39 @@ you opened the whole folder rather than a single file.
 
 ## 3. Course notebooks (optional)
 
-Only relevant if you are following the Advanced LCA course. The assistant works fine
-without them.
+Only relevant if you are following the Advanced LCA course. Everything else works without
+them.
 
 ```bash
-git clone https://github.com/massimopizzol/advanced-lca-notebooks.git
+bash get-course-notebooks.sh
 ```
 
-The material is in `Course-material-bw25`. Put it next to `brightway25-assistant` or inside
-it — either works.
+This downloads the ten notebooks from
+[massimopizzol/advanced-lca-notebooks](https://github.com/massimopizzol/advanced-lca-notebooks)
+into `Course-material-bw25/` **and sets each one to use the bw25 kernel**.
 
-When you open a notebook, **select the right kernel**:
+That second part matters. The notebooks arrive configured for a generic `python3` kernel,
+so without it every notebook fails on its first import until you change the kernel by hand
+— the step that gets missed most often.
+
+**Keep the folder together.** Notebooks 4, 7 and 8 do `from lci_to_bw2 import *` and read
+CSV files from their own directory, so they only work with the folder intact.
+
+Run the script again any time to pick up upstream changes. It asks before replacing
+anything, so your own edits are not lost silently.
+
+Suggested order:
 
 ```
-Kernel → Change Kernel → Python (bw25)
+Project_create_and_locate  →  0  →  1  →  2  →  3  →  4
+                                      ↓
+                                      5  →  6
+                                      ↓
+                                      7  →  8
 ```
 
-This step gets missed constantly. Without it you get `ModuleNotFoundError` no matter how
-many times you reinstall.
+Notebook 3 needs an ecoinvent licence. Notebooks 5–8 only depend on 1–2, so waiting on a
+licence does not block the uncertainty and sensitivity material.
 
 ---
 
