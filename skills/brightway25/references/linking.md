@@ -164,6 +164,26 @@ except Exception as e:
 
 ---
 
+## "My score is zero" — the differential
+
+Several different faults produce a zero or implausibly low score, all without an error.
+Work through them in this order:
+
+1. **Dangling links** — an exchange points at a `(database, code)` that does not exist. Run
+   the diagnostic loop above. Most common by far.
+2. **Nothing connects to the background** — links resolve, but the foreground only
+   references itself. Check that technosphere exchanges point into ecoinvent.
+3. **Wrong biosphere compartment** — the flow exists but sits in `('air',)` when the method
+   characterises `('air', 'urban air close to ground')`, or similar. Right link, no
+   characterisation.
+4. **The method does not characterise these flows** — flows absent from the method get a
+   factor of zero. `method.load()` and check your flows are in it.
+5. **All amounts are zero** — a spreadsheet import that read the wrong column.
+6. **The functional unit is wrong** — demanding an activity that is not the one you think,
+   or an amount of zero.
+
+Faults 3 and 4 are the ones people miss, because the link diagnostic comes back clean.
+
 ## Common linking failures
 
 | Symptom | Cause |
@@ -186,6 +206,12 @@ Worth understanding rather than memorising, because it explains a whole class of
 - **`code`** — a string you or ecoinvent chose. Stable. Portable. What linking uses.
 - **`id`** — an integer assigned by *this* installation, and it is the row/column position
   in the A matrix. It depends on what else happens to be in the database.
+
+**One legitimate use of `id`.** You will see `{act.id: 1}` as a demand key in Monte Carlo
+code, and that is fine — a demand dict is transient, built and consumed inside one session,
+where `id` is valid and slightly faster. The rule is about **stored** references: exchange
+`input` tuples, saved data, anything shared or written to disk. Transient demand key: fine.
+Stored link: never.
 
 So `id` will point at a different activity on someone else's machine, or after you
 re-import. Any workflow that shares data — a collaboration, a published supplement, a

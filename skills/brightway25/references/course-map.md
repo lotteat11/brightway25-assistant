@@ -7,8 +7,10 @@ understand to follow it, and where the difficulty actually sits.
 files, simple ideas) but are where Python-unfamiliar students lose the most time — the
 LCA is straightforward and the Python is not. Notebooks 5–8 look hard (big files, real
 statistics) but the code is largely given; the struggle is conceptual. Route accordingly:
-0–4 skews ASSIST, 5–8 skews TUTOR. Do not apply that mechanically — a method question in
-notebook 1 is still a method question.
+Notebooks 0–4 tend to raise tooling questions, 5–8 conceptual ones. That is a hint about
+what someone is likely stuck on, **not** a licence to switch into teaching mode: per
+`../SKILL.md`, teaching mode activates only when someone asks for it, whatever the
+notebook.
 
 ---
 
@@ -18,7 +20,7 @@ Projects, project directories, where Brightway stores data on disk.
 
 - `projects.create_project()`, `set_current()`, `projects.report()`, `delete_project()`
 - Custom storage via `os.environ['BRIGHTWAY2_DIR']`
-- Locking for synced folders: `bw.config.p['lockable'] = True`
+- Locking for synced folders: `config.p['lockable'] = True`
 
 **Uses the legacy `import brightway2 as bw` API** — the only notebook in this folder that
 does. Expect confusion when students compare it to notebooks 1+. See `bw25-api.md`.
@@ -97,7 +99,9 @@ Scaling up from toy systems to ecoinvent.
 - `bi.import_ecoinvent_release(version='3.11', system_model='consequential', username=…, password=…)`
 - Requires ecoinvent credentials and `ecoinvent_interface` installed
 - `.search()` with `limit` and `filter`; `.get(code)`; comprehension-based filtering
-- Linking a foreground system to ecoinvent and to `biosphere3`
+- Linking a foreground system to ecoinvent and to the biosphere database (named
+  `ecoinvent-3.11-biosphere` or `biosphere3` depending on release — check
+  `list(bd.databases)`)
 
 **Prerequisites:** notebooks 1–2, working install, valid licence.
 
@@ -142,7 +146,7 @@ a technical one.
 
 ## 5 — `5-Monte-Carlo.ipynb` · Uncertainty propagation
 
-First probabilistic notebook. **Tutor territory.**
+First probabilistic notebook. The conceptual load steps up here.
 
 - Lognormal distributions for environmental data; `loc` = log of geometric mean,
   `scale` = log of geometric standard deviation

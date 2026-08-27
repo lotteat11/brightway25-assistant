@@ -167,8 +167,13 @@ comparative Monte Carlo.
 Identified by tuples, stored separately from databases:
 
 ```python
+# Method keys are tuples whose exact shape depends on the database version.
+# NEVER type one from memory — list them and copy the real one:
 [m for m in bd.methods if 'IPCC' in str(m)][:5]
-method = bd.Method(('IPCC 2021', 'climate change', 'GWP 100a'))
+# ecoinvent 3.11, for example, uses a 4-tuple:
+#   ('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil',
+#    'global warming potential (GWP100)')
+method = bd.Method(some_key_you_looked_up)
 method.load()          # [(flow_key, factor), …]
 ```
 
@@ -200,11 +205,55 @@ exc['scale'] = np.log(1.2)               # log of geometric SD
 exc.save()
 ```
 
-Two Brightway-specific points that are not obvious from LCA knowledge:
+Three Brightway-specific points that are not obvious from LCA knowledge:
 
 1. **`loc` and `scale` are logarithms** for lognormal distributions.
 2. **Negative amounts must be negated before taking the log** — `np.log(-exc['amount'])`.
    The sign lives in `amount`; the distribution is defined on the magnitude.
+3. **A negative amount also needs `exc['negative'] = True`.** Omit it and the sampler
+   returns *positive* draws for what should be a negative technosphere input. No error, no
+   traceback — just a sign error in the results. Always set it alongside the negated log.
+
+```python
+fuel_exc['uncertainty type'] = LognormalUncertainty.id
+fuel_exc['loc']      = np.log(-fuel_exc['amount'])   # negate before the log
+fuel_exc['scale']    = np.log(1.2)
+fuel_exc['negative'] = True                          # required for negative amounts
+fuel_exc.save()
+```
+
+### "I want 20% uncertainty" — ask what they mean
+
+This request is ambiguous, and the ambiguity matters. `scale = np.log(1.2)` sets a
+**geometric standard deviation** of 1.2, whose 95% interval is roughly **−30% to +43%** —
+a factor of 2 from end to end, not ±20%. Someone who says "20%" usually means one of:
+
+| They mean | Encode as |
+|---|---|
+| ±20% at 95% confidence, multiplicative | `scale = np.log(1.2)/1.96` → GSD ≈ 1.098, giving −17%/+20% |
+| A GSD of 1.2 (a common pedigree-style default) | `scale = np.log(1.2)` → −30%/+43% |
+| ±20% hard bounds, no tail | `UniformUncertainty` with `minimum`/`maximum` |
+| ±20% most likely at nominal | `TriangularUncertainty` with `minimum`/`maximum` |
+
+Ask before writing the number. Getting this wrong produces a plausible-looking
+distribution that misstates the uncertainty by a factor of two or more — and nothing in
+the output reveals it.
+
+Bounded distributions use different fields:
+
+```python
+from stats_arrays import UniformUncertainty, TriangularUncertainty
+
+exc['uncertainty type'] = UniformUncertainty.id
+exc['minimum'], exc['maximum'] = 0.8 * amount, 1.2 * amount
+
+exc['uncertainty type'] = TriangularUncertainty.id
+exc['loc'] = amount                                   # the mode, NOT a log here
+exc['minimum'], exc['maximum'] = 0.8 * amount, 1.2 * amount
+```
+
+Note `loc` is a log only for lognormal. For triangular it is the mode, in the original
+units. Mixing that up is easy.
 
 Monte Carlo then samples those distributions:
 

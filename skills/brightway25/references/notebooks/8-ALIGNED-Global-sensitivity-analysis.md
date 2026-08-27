@@ -11,6 +11,19 @@ adapt the patterns, and debug without the notebook being open.
 
 ## What trips people up
 
+**A hardcoded database name that breaks on other projects**  
+This notebook branches on `s[1][0] == 'ecoinvent-3.11-biosphere'` (three places). The
+biosphere database is **not** called that on every installation — older imports name it
+`biosphere3`. On such a project the branch never fires and biosphere parameters fall
+through to the technosphere path, where they are sign-flipped and written to a technosphere
+coordinate. Depending on the ids involved that either raises a `KeyError` or produces wrong
+numbers. **Before adapting any of this code, replace that literal with the user's actual
+biosphere database name** — get it from `list(bd.databases)`.
+
+**Parameters are selected by list index**  
+`list(act.exchanges())[3]` and similar. Exchange ordering is not guaranteed, and this is
+the fragile pattern flagged in `../python-primer.md`. Select by name or code when adapting.
+
 **S1 vs ST**  
 First-order is the parameter alone; total-order includes interactions. **ST > S1 means interaction effects** — that is the interpretive point of the whole notebook.
 
@@ -191,7 +204,7 @@ for i in range(0,n_iter): # iterate 5 times...
         row_id = bd.Database(s[1][0]).get(s[1][1]).id
         
         # Use the id and the mapping dictionaries to find matrix row and columns
-        if s[1][0] == 'ecoinvent-3.11-biosphere':
+        if s[1][0] == 'ecoinvent-3.11-biosphere':   # <-- project-specific; see header
             col = LCA.dicts.activity[col_id] # find column index of A matrix for the activity
             row = LCA.dicts.biosphere[row_id] # find row index of B matrix for the exchange
             print(f"biosphere value: {LCA.biosphere_matrix[row,col]} | paramater value: {s[2][i]}")
@@ -221,7 +234,7 @@ for i in range(0,n_iter):
         col_id = bd.Database(s[0][0]).get(s[0][1]).id
         row_id = bd.Database(s[1][0]).get(s[1][1]).id
 
-        if s[1][0] == 'ecoinvent-3.11-biosphere':
+        if s[1][0] == 'ecoinvent-3.11-biosphere':   # <-- project-specific; see header
             col = LCA.dicts.activity[col_id] # find column index of A matrix for the activity
             row = LCA.dicts.biosphere[row_id] # find row index of B matrix for the exchange
             new_bio = s[2][i]
@@ -459,7 +472,7 @@ for i in range(0,len(param_values_FAST)):
         row_id = bd.Database(s[1][0]).get(s[1][1]).id
         
         # Use the id and the mapping dictionaries to find matrix row and columns
-        if s[1][0] == 'ecoinvent-3.11-biosphere':
+        if s[1][0] == 'ecoinvent-3.11-biosphere':   # <-- project-specific; see header
             col = LCA.dicts.activity[col_id] # find column index of A matrix for the activity
             row = LCA.dicts.biosphere[row_id] # find row index of B matrix for the exchange
             LCA.biosphere_matrix[row,col] = s[2][i] # substitute the value

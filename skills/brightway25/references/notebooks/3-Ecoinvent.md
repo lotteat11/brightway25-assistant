@@ -11,6 +11,11 @@ adapt the patterns, and debug without the notebook being open.
 
 ## What trips people up
 
+**The biosphere database name varies by release**  
+This notebook says "biosphere3" in places. Recent `import_ecoinvent_release()` calls name it
+after the version instead — `ecoinvent-3.11-biosphere`. Never hardcode either; read it from
+`list(bd.databases)`.
+
 **Licence agreement must be accepted on the website first**  
 Before anything else. The API rejects accounts that have never logged in through a browser and accepted the licence and personal-data agreement — and the error says nothing about agreements. See `../setup.md`.
 

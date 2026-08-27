@@ -198,7 +198,13 @@ Rules that cause most `.write()` failures:
 ```python
 bd.methods                                  # all available
 [m for m in bd.methods if 'IPCC' in str(m)]  # find one
-method = bd.Method(('IPCC 2021', 'climate change', 'GWP 100a'))
+# Method keys are tuples whose exact shape depends on the database version.
+# NEVER type one from memory — list them and copy the real one:
+#   [m for m in bd.methods if 'IPCC' in str(m)][:5]
+# ecoinvent 3.11, for example, uses a 4-tuple:
+#   ('ecoinvent-3.11', 'IPCC 2021', 'climate change: fossil',
+#    'global warming potential (GWP100)')
+method = bd.Method(some_key_you_looked_up)
 method.load()
 
 # custom method
@@ -250,6 +256,8 @@ from stats_arrays import LognormalUncertainty
 exc['uncertainty type'] = LognormalUncertainty.id      # an integer, not a float
 exc['loc']   = np.log(exc['amount'])                   # log of geometric mean
 exc['scale'] = np.log(1.01)                            # log of geometric SD
+                                                       # 1.01 is a near-zero teaching
+                                                       # value — pick a real GSD
 exc.save()
 ```
 
@@ -257,12 +265,19 @@ Two things students get wrong here:
 
 1. **`loc` and `scale` are logs.** `scale = np.log(1.2)`, not `1.2`. Nearly everyone gets
    this wrong once, and it produces no error — just a wrong distribution.
-2. **Negative amounts must be negated before taking the log.** Technosphere inputs are
-   negative, and `np.log()` of a negative number is undefined. Notebook 5 does:
+2. **Negative amounts must be negated before taking the log**, and also need
+   `'negative': True`:
    ```python
-   fuel_exc['loc'] = np.log(-fuel_exc['amount'])       # note the minus
+   fuel_exc['loc']      = np.log(-fuel_exc['amount'])   # note the minus
+   fuel_exc['negative'] = True                          # or draws come back positive
    ```
-   The sign lives in `amount`; the distribution is defined on the magnitude.
+   The sign lives in `amount`; the distribution is defined on the magnitude. Omitting
+   `negative` gives positive samples for a negative input — a sign error with no error
+   message.
+3. **"20% uncertainty" is ambiguous.** `scale=np.log(1.2)` is a geometric SD of 1.2, whose
+   95% interval is roughly −30%/+43% — not ±20%. For ±20% at 95%, use
+   `np.log(1.2)/1.96`. See `lca-in-brightway.md` for the full conversions and for bounded
+   (uniform/triangular) alternatives.
 
 Uncertainty type codes: `0` undefined, `1` no uncertainty, `2` lognormal, `3` normal,
 `4` uniform, `5` triangular. Prefer the named constants (`LognormalUncertainty.id`,
@@ -290,7 +305,9 @@ bi.import_ecoinvent_release(
     system_model='consequential',
     username='...', password='...')
 ```
-Needs `ecoinvent_interface` installed and a valid licence. Brings `biosphere3` with it.
+Needs `ecoinvent_interface` installed and a valid licence. Brings a biosphere database with it. **Its name depends on the release** — recent
+imports name it after the version (`ecoinvent-3.11-biosphere`), older setups use
+`biosphere3`. Always check `list(bd.databases)` rather than assuming either.
 Takes several minutes with no progress indicator — students think it has hung.
 
 Version and system model are strings: `'3.11'`, `'3.10'`; `'cutoff'`, `'consequential'`,

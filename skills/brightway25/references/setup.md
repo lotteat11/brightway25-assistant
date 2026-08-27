@@ -1,8 +1,7 @@
 # Setup — local installation, kernels, ecoinvent
 
 Students run these notebooks **locally**. Setup is where the most time is lost and where
-the least learning happens, so be maximally helpful here. This is pure ASSIST territory —
-nothing is being assessed. Fix it fast.
+the least learning happens. Fix it fast and get them back to their work.
 
 ---
 
@@ -54,7 +53,8 @@ import bw2data as bd, bw2calc as bc
 bd.projects.set_current('my_project')          # 1. pick a workspace
 db = bd.Database('my_foreground')              # 2. get your database
 act = db.get('my_activity')                    # 3. pick what to assess
-method = ('IPCC 2021', 'climate change', 'GWP 100a')
+method = ...    # look one up: [m for m in bd.methods if 'IPCC' in str(m)][:5]
+                # keys differ by release; ecoinvent 3.11 uses a 4-tuple
 
 lca = bc.LCA({act: 1}, method)                 # 4. define the functional unit
 lca.lci()                                      # 5. solve the inventory
@@ -157,7 +157,7 @@ machines syncing the same SQLite database will eventually damage it.
 
 Best: keep projects **outside** synced folders. If unavoidable:
 ```python
-bw.config.p['lockable'] = True
+bd.config.p['lockable'] = True
 ```
 which restricts write access to one user while others read.
 
@@ -218,7 +218,9 @@ bi.import_ecoinvent_release(
 Arguments are **strings**: `'3.11'`, not `3.11`. System models: `'cutoff'`,
 `'consequential'`, `'apos'` — availability varies by version.
 
-The import brings `biosphere3` with it. No separate `bw2setup()` in 2.5.
+The import brings a biosphere database with it — no separate `bw2setup()` in 2.5. **Its
+name varies by release**: recent imports use `ecoinvent-3.11-biosphere`, older setups
+`biosphere3`. Check `list(bd.databases)`; never hardcode it.
 
 ### Step 4 — wait, and do not interrupt
 
@@ -275,7 +277,9 @@ Precedence: direct arguments beat environment variables, which beat stored setti
 | "Not able to determine geocollections" | Harmless warning. The import succeeded |
 | Disk fills up | ecoinvent projects are several GB each; `bd.projects.report()` shows sizes |
 
-The import brings `biosphere3` with it — no separate `bw2setup()` needed in 2.5.
+The import brings a biosphere database with it — no separate `bw2setup()` needed in 2.5.
+**Its name varies by release** (`ecoinvent-3.11-biosphere` or `biosphere3`) — check
+`list(bd.databases)`.
 
 ---
 

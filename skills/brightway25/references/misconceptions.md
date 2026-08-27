@@ -50,8 +50,9 @@ copied from a positive emission to a negative input produces `nan` with no clear
 explanation.
 
 **How to address:** plot the resulting distribution and read the spread off the histogram.
-Seeing a nominal "20% uncertainty" span orders of magnitude makes the point faster than
-any explanation.
+Writing `1.2` where `np.log(1.2)` belongs gives a 95% span of roughly a factor of 110 —
+orders of magnitude, immediately visible. Worth noting separately that even a *correct*
+`np.log(1.2)` is a factor-of-2 spread (−30%/+43%), not ±20%; see `lca-in-brightway.md`.
 
 *Confidence: high.*
 

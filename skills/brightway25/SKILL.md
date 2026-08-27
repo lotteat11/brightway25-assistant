@@ -44,6 +44,43 @@ be present. If someone is working through course material, `references/course-ma
 gives that context — but everything else here stands alone and applies to any Brightway
 2.5 work.
 
+## Reference files
+
+Load these as needed; do not read them all up front.
+
+| File | Use when |
+|---|---|
+| **"Help me set up X"** | A task, not an error — see *Adapting course code* below before reaching for a notebook file |
+| `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
+| `references/errors.md` | **Any traceback.** Check here first |
+| `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — unlinked exchanges, `KeyError` on a code, choosing an ecoinvent activity |
+| `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
+| `references/setup.md` | Install, conda, kernels, ecoinvent credentials, project directories, the mental model |
+| `references/python-primer.md` | A Python idiom is the obstacle rather than the LCA |
+| `references/misconceptions.md` | Reasoning about a method seems off in a familiar way |
+| `references/notebooks/*.md` | **Working through the Advanced LCA course.** One file per notebook, carrying the actual code plus what trips people up. See below |
+| `references/course-map.md` | An overview of all ten notebooks and how they depend on each other |
+
+### The three things people find hardest
+
+Recognise these and go to the right reference immediately.
+
+**1. Getting oriented in Brightway.** Not syntax — the structure. What a project,
+database, activity and exchange are, and in what order to do things. `setup.md` opens with
+that model and a realistic first-run sequence. Establish the pieces before writing code.
+
+**2. Brightway 2 versus 2.5.** Existing scripts, published supplements, colleagues' code
+and AI answers are full of `import brightway2 as bw` and `MonteCarloLCA`. Most translates
+mechanically, but Monte Carlo and ecoinvent import changed *behaviourally*, not just in
+name. `bw25-api.md` has both. Say plainly when code is old-API — the source is outdated,
+not the person.
+
+**3. Linking foreground to background.** Brightway does no fuzzy matching: an exchange
+points at exactly one `(database, code)` tuple, and the three databases involved use three
+different code formats. `linking.md` has a diagnostic loop that turns "something is wrong"
+into a list of specific broken links — reach for it before anyone reads a spreadsheet by
+hand.
+
 ## Default mode: be a good coding assistant
 
 The value you add over a generic assistant is **knowing Brightway 2.5 properly** — the
@@ -112,42 +149,6 @@ You can still name methods — "this is *dependent sampling*", "that's a sensiti
 — and you should, because the vocabulary is what lets them find the source themselves.
 Just do not attach a reference to it.
 
-## Reference files
-
-Load these as needed; do not read them all up front.
-
-| File | Use when |
-|---|---|
-| `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
-| `references/errors.md` | **Any traceback.** Check here first |
-| `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — unlinked exchanges, `KeyError` on a code, choosing an ecoinvent activity |
-| `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
-| `references/setup.md` | Install, conda, kernels, ecoinvent credentials, project directories, the mental model |
-| `references/python-primer.md` | A Python idiom is the obstacle rather than the LCA |
-| `references/misconceptions.md` | Reasoning about a method seems off in a familiar way |
-| `references/notebooks/*.md` | **Working through the Advanced LCA course.** One file per notebook, carrying the actual code plus what trips people up. See below |
-| `references/course-map.md` | An overview of all ten notebooks and how they depend on each other |
-
-## The three things people find hardest
-
-Recognise these and go to the right reference immediately.
-
-**1. Getting oriented in Brightway.** Not syntax — the structure. What a project,
-database, activity and exchange are, and in what order to do things. `setup.md` opens with
-that model and a realistic first-run sequence. Establish the pieces before writing code.
-
-**2. Brightway 2 versus 2.5.** Existing scripts, published supplements, colleagues' code
-and AI answers are full of `import brightway2 as bw` and `MonteCarloLCA`. Most translates
-mechanically, but Monte Carlo and ecoinvent import changed *behaviourally*, not just in
-name. `bw25-api.md` has both. Say plainly when code is old-API — the source is outdated,
-not the person.
-
-**3. Linking foreground to background.** Brightway does no fuzzy matching: an exchange
-points at exactly one `(database, code)` tuple, and the three databases involved use three
-different code formats. `linking.md` has a diagnostic loop that turns "something is wrong"
-into a list of specific broken links — reach for it before anyone reads a spreadsheet by
-hand.
-
 ## Ecoinvent — check the licence agreement first
 
 **Before debugging any ecoinvent authentication problem, ask whether they have logged in
@@ -189,6 +190,32 @@ downloaded.
 
 Load more than one where it helps: a Monte Carlo question that turns out to be about
 comparison spans 5 and 6.
+
+### Adapting course code
+
+The notebook files are **one course's material**, not general-purpose recipes. Before
+handing any of it to someone working on their own system, strip out what is specific to
+that course:
+
+- **Project name** `advlca25`, database names, and hardcoded UUIDs like
+  `a7d34649-9c10-4423-bac3-ecab9b43b20c`
+- **Hardcoded database names in conditionals.** Notebook 8 branches on
+  `s[1][0] == 'ecoinvent-3.11-biosphere'`. On a project whose biosphere is named
+  differently, that branch never fires, biosphere parameters silently get treated as
+  technosphere ones, and the results are wrong with no error. Replace it with a check
+  against the user's actual database names.
+- **Index-based exchange selection** — `list(act.exchanges())[3]` depends on ordering.
+  Select by name or code instead.
+- **`lci_to_bw2.py`**, a course helper that is not a published package. Someone importing a
+  spreadsheet outside the course wants `bw2io`'s own importers instead.
+
+The code is also **as the author wrote it**, including a few mislabelled comments (some
+cells label `[1]` as "the first exchange"). Treat it as a worked example to adapt, not as
+verified reference code, and say so if you are quoting it directly.
+
+When someone asks "help me set up a sensitivity analysis for *my* system", the useful
+answer is the *structure* — the OAT loop in notebook 7 generalises well — with their own
+parameters substituted in, not the course's dummy dataset.
 
 **These files quote the notebooks' own citations** (Henriksson et al. 2015, Pizzol 2019,
 Heijungs & Suh 2002 and others). Those are verified — they come from the material itself,
