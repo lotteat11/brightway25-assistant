@@ -233,13 +233,13 @@ consumes 2 kg of that".
 bd.projects.set_current('my_project')
 act = bd.Database('my_foreground').get('my_activity')
 lca = bc.LCA({act: 1}, method)
-lca.lci()                                  # solve inventory:  s = A⁻¹f,  g = Bs
-lca.lcia()                                 # characterise:     score = CF · g
+lca.lci()                                  # trace the supply chain: total emissions
+lca.lcia()                                 # weight them by the impact method
 print(lca.score)
 ```
 
-`lci()` and `lcia()` are separate because they answer different questions — what is
-emitted, then how much it matters. That is why `.score` fails if you skip them.
+`lci()` and `lcia()` answer different questions — what is emitted, then how much it
+matters — which is why `.score` needs both.
 
 ### 2. Brightway 2 versus 2.5
 

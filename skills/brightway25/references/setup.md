@@ -1,14 +1,14 @@
 # Setup — local installation, kernels, ecoinvent
 
-Students run these notebooks **locally**. Setup is where the most time is lost and where
-the least learning happens. Fix it fast and get them back to their work.
+Installation, kernels, and ecoinvent credentials. This is where most time is lost, and
+none of it is LCA — resolve it quickly.
 
 ---
 
-## Getting started — the mental model
+## How Brightway is organised
 
-Newcomers get stuck less on syntax than on **not knowing what the pieces are**. Five
-minutes on this saves an hour of confusion.
+The structure, before the syntax. Most difficulty with Brightway is structural rather than
+about Python.
 
 **A project is a sealed workspace.** Everything lives inside one project: your foreground
 database, ecoinvent, the biosphere, the LCIA methods. Projects do not see each other. You
@@ -20,8 +20,8 @@ bd.projects.set_current('my_project')     # creates it if it does not exist
 print(bd.projects.current)
 ```
 
-Forgetting to set the project is the cause of a surprising number of "my database
-disappeared" reports. It did not — you are in a different project.
+"My database disappeared" is usually a project that was never set. The database is still
+there; the session is pointed somewhere else.
 
 **A project contains databases**, usually three kinds:
 
@@ -65,7 +65,7 @@ print(lca.score)                               # 7. read the result
 Steps 5 and 6 are separate on purpose: `lci()` answers *what is emitted*, `lcia()` answers
 *how much does it matter*. That is why `.score` fails if you skip them.
 
-**A realistic first-time order of work:**
+**A working order for a new project:**
 
 1. Install the environment, register the kernel, select it in Jupyter
 2. Create a project
@@ -99,8 +99,8 @@ most of the problems below.
 
 ## The most common problem, by a distance
 
-**Symptom:** `ModuleNotFoundError: No module named 'bw2data'` — even though the student
-just installed it, possibly several times.
+**Symptom:** `ModuleNotFoundError: No module named 'bw2data'`, despite the package being
+installed — possibly several times.
 
 **Cause:** the notebook kernel is not the environment they installed into.
 
@@ -141,12 +141,12 @@ os.environ['BRIGHTWAY2_DIR'] = '/Users/you/Documents/BWprojects'
 import bw2data as bd
 ```
 
-Two rules students break:
-1. The environment variable must be set **before** the import. After is too late.
-2. Changing it mid-session needs a **kernel restart**.
+Two constraints:
+1. The environment variable must be set **before** the import. After has no effect.
+2. Changing it mid-session requires a **kernel restart**.
 
-Symptom of getting this wrong: "my projects disappeared". They have not — Brightway is
-looking in a different directory. Check `bd.projects.dir`.
+Symptom: "my projects disappeared". Brightway is reading a different directory. Check
+`bd.projects.dir`.
 
 ---
 

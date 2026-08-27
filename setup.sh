@@ -224,8 +224,8 @@ else
     "\n",
     "el = bd.get_activity(('db', 'el'))\n",
     "lca = bc.LCA({el: 1000}, ('demo', 'gwp'))\n",
-    "lca.lci()    # inventory:      s = A-1 f,  g = B s\n",
-    "lca.lcia()   # characterise:   score = CF . g\n",
+    "lca.lci()    # trace the supply chain: what is emitted in total\n",
+    "lca.lcia()   # weight those emissions by the impact method\n",
     "\n",
     "print(f'{lca.score:.1f} kg CO2-eq per 1000 kWh')   # expect 80.0"
   ]},

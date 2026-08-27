@@ -1,10 +1,9 @@
 # How Brightway represents LCA
 
-The conventions Brightway uses to express LCA concepts. Not LCA theory — the people using
-this know that. This is the translation layer between LCA as they practise it and LCA as
-Brightway expects it written, and it is where most confusion actually sits.
+The conventions Brightway uses to express LCA concepts — the translation layer between LCA
+as practised and LCA as Brightway expects it written.
 
-Explain any of this freely, without waiting to be asked.
+This is not LCA theory. Explain any of it freely, without waiting to be asked.
 
 ---
 

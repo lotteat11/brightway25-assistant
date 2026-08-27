@@ -2,10 +2,10 @@
 
 The Python patterns that come up constantly in Brightway work. Not a Python course.
 
-Use this when **Python** is the obstacle rather than the LCA — when someone knows exactly
-what they want to compute but the syntax is in the way.
+Use this when **Python** is the obstacle rather than the LCA — the computation is clear,
+the syntax is in the way.
 
-Explain the idiom and move on. No preamble about what they should already know.
+Explain the idiom and move on.
 
 ---
 
@@ -94,7 +94,7 @@ for act in db:
         result.append(act)
 ```
 
-If the comprehension is opaque, write the loop instead — it is not worse code.
+The loop form is equivalent and often reads better in a notebook. Either is fine.
 
 Extracting one field:
 ```python
