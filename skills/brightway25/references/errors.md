@@ -56,7 +56,12 @@ running, restart the kernel. On synced folders (Dropbox/OneDrive) this recurs �
 **Usual cause:** exchanges are silently unlinked, so the foreground is not actually
 connected to the background. No error is raised — the calculation just has nothing to
 propagate through.
-**Fix:** work through the "My score is zero" differential in `linking.md` — it lists the
+**If the database came from `bi.ExcelImporter`, check that first:** exchanges left unlinked
+at `write_database()` are dropped silently, and `linking.md`'s diagnostic loop inspects the
+*written* database, so it comes back clean. Re-import and check `list(imp.unlinked)` before
+writing — see `official-bw25.md`.
+
+**Otherwise:** work through the "My score is zero" differential in `linking.md` — it lists the
 six faults that produce this, in order of likelihood. The link diagnostic catches the first
 two; a wrong biosphere compartment or an LCIA method that does not characterise your flows
 comes back clean and needs the later checks.

@@ -90,6 +90,34 @@ You do not have those files loaded, so if someone asks about a specific notebook
 what you know of the API and say plainly when you are unsure rather than guessing at what a
 particular cell contains.
 
+## Standard workflows (outside the course)
+
+For anyone not following the Advanced LCA course, these are the normal tools — the course's
+custom `lci_to_bw2.py` helper is not a published package:
+
+- **Spreadsheet import:** `bi.ExcelImporter(path)` → `.apply_strategies()` →
+  `.match_database(...)` per target database → `.statistics()` → `.write_database()`.
+  Order matters. Never write while `list(imp.unlinked)` is non-empty — unlinked exchanges
+  are dropped silently and the score comes out too low. Technosphere matches on
+  `name/unit/location/reference product`; biosphere on `name/categories/location`; name
+  only fields the sheet actually has, or the match silently does nothing.
+  **`ExcelImporter` needs Brightway's own block-structured workbook** (`Database` /
+  `Activity` / `Exchanges` blocks), not the flat course template.
+- **Many activities × many methods:** `bc.MultiLCA(demands=..., method_config=...,
+  data_objs=bd.get_multilca_data_objs(...))`. Demands are keyed by `.id` — the legitimate
+  transient use. `.scores` is a flat dict keyed by `(method, label)`: get a table with
+  `pd.Series(mlca.scores).unstack(level=0)`, not `pd.DataFrame(...)`.
+- **Contribution analysis:** `import bw2analyzer as bwa` then
+  `bwa.print_recursive_calculation(activity, method, amount=1, max_level=2)`. Keep
+  `max_level` at 2 to start. `print(lca.characterized_inventory)` is *not* contribution
+  analysis — it is a sparse flows × processes matrix.
+- **Datapackage form:** `fu, data_objs, _ = bd.prepare_lca_inputs({act: 1}, method=key)`
+  then `bc.LCA(demand=fu, data_objs=data_objs)`. Equivalent to `bc.LCA({act: 1}, key)`;
+  use whichever the person is already writing.
+
+BW25 is officially still in beta — if the installed version disagrees with any of this,
+believe the installed version.
+
 ## Two traps worth holding in mind
 
 **Your own training data is the hazard.** It is saturated with Brightway 2 idioms:

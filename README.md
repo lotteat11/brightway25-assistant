@@ -148,6 +148,7 @@ reference list will be added later.
 | [`errors.md`](skills/brightway25/references/errors.md) | 25 error messages → cause → fix. Database, calculation, ecoinvent, environment and Python errors |
 | [`linking.md`](skills/brightway25/references/linking.md) | Foreground-to-background linking: the three code formats, finding the right ecoinvent activity, spreadsheet import columns, and a diagnostic loop for broken links |
 | [`bw25-api.md`](skills/brightway25/references/bw25-api.md) | The current API, plus what changed from Brightway 2 — in name and in behaviour |
+| [`official-bw25.md`](skills/brightway25/references/official-bw25.md) | Standard workflows from the official Brightway tutorial: `ExcelImporter`, unlinked exchanges, `MultiLCA`, contribution analysis |
 | [`setup.md`](skills/brightway25/references/setup.md) | The mental model, installation, kernels, project directories, synced folders, the ecoinvent checklist |
 | [`python-primer.md`](skills/brightway25/references/python-primer.md) | The Python idioms Brightway code relies on: tuple keys, nested dicts, generators, the Monte Carlo iteration idiom |
 | [`misconceptions.md`](skills/brightway25/references/misconceptions.md) | Eight recurring misreadings of method — OAT read as global, `loc`/`scale` as mean and SD, dependent sampling as cheating |

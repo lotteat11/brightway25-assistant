@@ -53,12 +53,13 @@ Load these as needed; do not read them all up front.
 | **"Help me set up X"** | A task, not an error — see *Adapting course code* below before reaching for a notebook file |
 | `references/lca-in-brightway.md` | **How Brightway represents LCA** — signs, exchange types, allocation/substitution, matrices, uncertainty. Reach for it whenever a modelling convention is the obstacle |
 | `references/errors.md` | **Any traceback.** Check here first |
-| `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — unlinked exchanges, `KeyError` on a code, choosing an ecoinvent activity |
+| `references/linking.md` | **Connecting foreground to ecoinvent/biosphere** — `KeyError` on a code, choosing an ecoinvent activity, a score of zero. For unlinked exchanges from `bi.ExcelImporter` specifically, use `official-bw25.md` instead |
 | `references/bw25-api.md` | API questions, and **any time legacy `bw2` code appears** |
+| `references/official-bw25.md` | **Standard Brightway workflows, outside the course.** "Import my Excel/spreadsheet inventory", "compare several alternatives across several impact categories", "which process contributes most", "my import left things unlinked". Covers `bi.ExcelImporter`, `MultiLCA`, `bw2analyzer`, `prepare_lca_inputs` |
 | `references/setup.md` | Install, conda, kernels, ecoinvent credentials, project directories, the mental model |
 | `references/python-primer.md` | A Python idiom is the obstacle rather than the LCA |
 | `references/misconceptions.md` | Reasoning about a method seems off in a familiar way |
-| `references/notebooks/*.md` | **Working through the Advanced LCA course.** One file per notebook, carrying the actual code plus what trips people up. See below |
+| `references/notebooks/*.md` | **Only if they are following the Advanced LCA course.** One file per notebook, with the actual code. Course-specific — read *Adapting course code* below before reusing any of it |
 | `references/course-map.md` | An overview of all ten notebooks and how they depend on each other |
 
 ### The three things people find hardest
@@ -207,7 +208,7 @@ that course:
 - **Index-based exchange selection** — `list(act.exchanges())[3]` depends on ordering.
   Select by name or code instead.
 - **`lci_to_bw2.py`**, a course helper that is not a published package. Someone importing a
-  spreadsheet outside the course wants `bw2io`'s own importers instead.
+  spreadsheet outside the course wants `bi.ExcelImporter` — see `official-bw25.md`.
 
 The code is also **as the author wrote it**, including a few mislabelled comments (some
 cells label `[1]` as "the first exchange"). Treat it as a worked example to adapt, not as

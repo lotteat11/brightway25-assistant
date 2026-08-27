@@ -11,6 +11,11 @@ adapt the patterns, and debug without the notebook being open.
 
 ## What trips people up
 
+**This is the course's import route, not Brightway's**  
+It uses `lci_to_bw2.py`, a course helper that is not a published package. Anyone outside
+the course wants `bi.ExcelImporter` instead — see `../official-bw25.md`. The two expect
+completely different spreadsheet layouts.
+
 **The CSV format is unforgiving**  
 Column names and order both matter. First five columns are `Activity …`, the rest `Exchange …`. Most failures here are data-shape failures, not code failures — **inspect `df.columns` before debugging any code**.
 
